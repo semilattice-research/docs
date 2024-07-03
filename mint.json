@@ -2,10 +2,10 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Semilattice",
   "logo": {
-    "dark": "/logo/docs_logo_dark.svg",
-    "light": "/logo/docs_logo_light.svg"
+    "dark": "/logo/logo_dark.svg",
+    "light": "/logo/logo_light.svg"
   },
-  "favicon": "/docs_favicon.svg",
+  "favicon": "/favicon.svg",
   "colors": {
     "primary": "#29A383",
     "light": "#29A383",
