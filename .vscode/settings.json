@@ -1,0 +1,9 @@
+{
+    "workbench.colorTheme": "GitHub Dark",
+    "workbench.colorCustomizations": {
+        "editor.selectionBackground": "#0206fa",
+        "editor.selectionHighlightBackground": "#0206faec",
+        "editor.findMatchBackground": "#1500ff",
+        "editor.findMatchHighlightBackground": "#5b5cacea",
+    },
+}
