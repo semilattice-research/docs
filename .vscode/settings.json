@@ -6,4 +6,8 @@
         "editor.findMatchBackground": "#1500ff",
         "editor.findMatchHighlightBackground": "#5b5cacea",
     },
+    "[markdown]": {
+      "editor.formatOnSave": true,
+      "editor.tabSize": 4
+    }
 }
