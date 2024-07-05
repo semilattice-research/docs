@@ -2,55 +2,63 @@
 title: 'Quickstart'
 description: 'Ask your first question in seconds'
 ---
-![Semilattice Docs](/images/docs_hero.png)
+![Semilattice Docs](/images/quickstart/hero.png)
 ## Ask your first question
 Semilattice is a computational research platform which lets you predict how specific populations of people would answer questions. Follow the steps below to ask your first question.
-<Steps>
+<Steps titleSize="h3">
     <Step title="Create your account">
         [Sign up](https://semilattice.ai/sign-up) and verify your email to log in to the [dashboard](https://semilattice.ai/sign-in).
     </Step>
     <Step title="Choose which population to ask">
-        Semilattice simulates how specific [populations](/core-concepts/populations) of people answer questions, so you first need to decide who to ask.
-        ![Select a population](/images/quickstart_population.png)
-        Choose from a range of ready-to-use public populations, or [schedule a call](https://calendar.app.google/nHn6qpKGzvKamrZ87) to talk about [custom populations](/populations/create-a-population) for your audiences.
+        Semilattice simulates how specific [populations](/populations/introduction) of people answer questions, so you first need to decide who to ask.
+        <Frame caption="Choose from a range of ready-to-use populations">
+            <img src="/images/quickstart/population.png" />
+        </Frame>
+        Choose from a range of ready-to-use public populations or [schedule a call](https://calendar.app.google/nHn6qpKGzvKamrZ87) to talk about [custom populations](/populations/create-a-population) for your audiences.
     </Step>
     <Step title="Write your question">
-        Semilattice currently supports single option multiple-choice [questions](/core-concepts/questions). You can ask about anything the population may have talked about online before the population's knowledge cutoff. For the public populations, the knowledge cutoff is **September 2021**.
-        ![Write your question](/images/quickstart_question.png)
+        Semilattice currently supports single option multiple-choice [questions](/questions/introduction). You can ask about anything the population may have talked about online before the population's knowledge cutoff. For the public populations, the knowledge cutoff is **September 2021**.
+        <Frame caption="Ask any single option multiple-choice question">
+            <img src="/images/quickstart/question.png" />
+        </Frame>
     </Step>
     <Step title="Click Predict">
-        When you click Predict, Semilattice [simulates](/core-concepts/simulation-engines) the population answering your question thousands of times. This maximises accuracy but can take up to 90 seconds.
-        ![Write your question](/images/quickstart_running.png)
+        When you click Predict, Semilattice [simulates](/simulation-engines/introduction) the population answering your question thousands of times. This maximises accuracy but can take up to 90 seconds.
+        <Frame caption="Semilattice simulates thousands of answers for accuracy">
+            <img src="/images/quickstart/running.png" />
+        </Frame>
     </Step>
     <Step title="Interpret the results">
         A bar chart will display the results once the prediction is complete. There will be one bar for each of the question's answer options. The width of each bar represents the percentage of the population who were predicted to choose that answer option.
-        ![Write your question](/images/quickstart_predicted.png)
+        <Frame caption="Results are generated in less than 90 seconds">
+            <img src="/images/quickstart/predicted.png" />
+        </Frame>
         The error bars show the estimated, potential error for each answer option based on the population's [evaluation scores](/populations/evaluation-metrics).
         <Warning>Results are predictions and their accuracy can only be estimated. Visit the [interpreting results](/questions/interpreting-results) section to learn more.</Warning>
     </Step>
 </Steps>
 ## Next steps
-<Icon icon="party-horn" /> Congratulations, you've asked your first question! Now you're ready to dive into Semilattice's **core concepts**.
+<Icon icon="party-horn" /> Congratulations, you've asked your first question! Now you're ready to dive into Populations, Questions, and Simulation Engines.
 <CardGroup cols={3}>
     <Card
         title="Populations"
         icon="globe"
-        href="/core-concepts/populations"
+        href="/populations/introduction"
     >
-        Populations let you model specific target groups of people.
+        Populations model specific groups of people
     </Card>
     <Card
         title="Questions"
         icon="chart-simple"
-        href="/core-concepts/questions"
+        href="/questions/introduction"
     >
-        Questions let you predict how a Population would answer a question.
+        Questions are predictions of how a Population would answer a question
     </Card>
     <Card
         title="Simulation Engines"
         icon="shuffle"
-        href="/core-concepts/simulation-engines"
+        href="/simulation-engines/introduction"
     >
-        Simulation Engines predict a Population's answers to a Question.
+        Simulation Engines generate Questions for Populations
     </Card>
 </CardGroup>

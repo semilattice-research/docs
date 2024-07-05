@@ -39,19 +39,12 @@
       ]
     },
     {
-      "group": "Core Concepts",
-      "pages": [
-        "core-concepts/populations",
-        "core-concepts/questions",
-        "core-concepts/simulation-engines"
-      ]
-    },
-    {
       "group": "Populations",
+      "icon": "globe",
       "pages": [
         "populations/introduction",
-        "populations/input-data",
-        "populations/evaluation-metrics",
+        "populations/seed-data",
+        "populations/evaluation",
         "populations/create-a-population"
       ]
     },
@@ -62,6 +55,14 @@
         "questions/ask-a-question",
         "questions/prediction-lifecycle",
         "questions/interpreting-results"
+      ]
+    },
+    {
+      "group": "Simulation Engines",
+      "pages": [
+        "simulation-engines/introduction",
+        "simulation-engines/answers-engines",
+        "simulation-engines/roadmap"
       ]
     }
   ],
