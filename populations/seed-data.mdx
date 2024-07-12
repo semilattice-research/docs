@@ -1,5 +1,94 @@
 ---
 title: 'Seed Data'
-description: "Understand how a Population's input data are used by the Simulation Engine to make predictions."
+description: "Populations are defined by their seed data"
 ---
-Importantly, a Population's seed data do not represent all of the information which Semilattice uses to make predictions about the target population. Most of the information comes from the Large Language Model (LLM) used by the [Simulation Engine](/simulation-engines/introduction), with the seed data effectively selecting the relevant information from the LLM.
+![Seed Data](/images/populations/seed_data/hero.png)
+
+Semilattice needs a small sample of data from the [target population](/populations/introduction#target-population) to make predictions. This page explains the data requirements and some core concepts which will help you to create good Populations.
+
+## Requirements
+Populations require individual-level survey, poll, or questionnaire response data from the group of people the Population aims to model. Beyond the first **sim_id** column, each column should contain the group's responses to a single option multiple-choice question.
+
+### Technical requirements
+Semilattice accepts `.csv` files which meet the following requirements:
+- the first column must be titled **sim_id**
+- the **sim_id** column should contain a unique number in each row
+- there should be between **5** and **20** question columns
+- questions must be between **3** and **300** characters long
+- there should be between **25** and **3,000** respondent rows
+- answers must be no more than **200** characters long
+- answer cells can be empty, but no more than **5%** of them across all columns
+- there should be between **1** and **15** unique answers per column
+
+### Qualitative requirements & guidelines
+Semilattice doesn't check if your seed data follows these requirements and guidelines, but they are essential to creating effective Populations.
+<AccordionGroup>
+    <Accordion title="Column headers should be questions or propositions">
+        Semilattice assumes column headers are questions or propositions: pieces of text posed to people who can respond with an answer. For example, "What is your favourite colour?" is a question while "You believe reality is..." is a proposition.
+    </Accordion>
+    <Accordion title="Questions cannot assume knowledge of other questions">
+        Questions can't assume the responder has any knowledge of the other questions in the dataset. For example, the question "How strongly do you feel about your answer to the last question?" will not work because with simulated respondents there isn't an equivalent of a real-world survey's last question. Similarly, grid questions must be reformatted so that the question is included with each column of answers.
+    </Accordion>
+    <Accordion title="Answer options cannot refer to other answer options">
+        Answer options cannot refer to the question's other answer options. For example, the answer option "None of the above" is invalid because its meaning depends on the other answer options.
+    </Accordion>
+    <Accordion title="Questions and answer options must be human-readable">
+        Survey, poll, and questionnaire datasets often record questions and answers as descriptors, identifiers, or codes requiring lookup in data dictionaries. Semilattice only accept a single `.csv`, so questions and answers have to be decoded into human-readable strings.
+    </Accordion>
+    <Accordion title="All questions and answers should come from the same survey, poll, or questionnaire">
+        Mixing data from different samples is not recommended. Semilattice assumes seed data come from a single survey, poll, or questionnaire.
+    </Accordion>
+    <Accordion title="Answers in a row should all come from the same person">
+        Mixing answers from different people is not recommended. Semilattice assumes all the answers in a row come from the same person.
+    </Accordion>
+</AccordionGroup>
+
+### Good to know
+These considerations are useful to bear in mind.
+<AccordionGroup>
+    <Accordion title="The unique values in a column define the question's answer options">
+        The set of unique values in a column define the answer options for the question in that column. For example, the unique values under the question header "What is your favourite colour?" may be: "Red", "Green", "Blue", "Yellow", "Purple", "Orange", "Teal", "Pink", "Brown", "Indigo".
+    </Accordion>
+    <Accordion title="Other types of questions can be reformatted to be compatible, with caution">
+        Questions which were originally posed as single option multiple-choice questions are recommended, but if necessary other, compatible types of questions can be reformatted. For example, multiple selection questions (e.g. "Choose all that apply...") can be reformatted into one binary question for each selection option (e.g. "Do you do X?", "Do you do Y?", ...). Or you can group and recode respondents' answers to free text questions to make a single option multiple-choice question. Caution is advised though: the more you reformat, the more your seed data will diverge from reality.
+    </Accordion>
+    <Accordion title="Question order doesn't matter">
+        The order of the question columns in your seed data has no effect. Questions will be used in various ways, in various orders.
+    </Accordion>
+    <Accordion title="Answer option order is always random">
+        Answer options will be presented in random order by default. Answer options with semantic order (e.g. "Strongly Agree" to "Strongly Disagree") are perfectly valid, but answer options which assume an order (e.g. "None of the above") are not. Answer options like "None of the above" should be reformatted to stand along, e.g. "None".
+    </Accordion>
+    <Accordion title="Bigger datasets can be filtered, with caution">
+        You can filter large datasets down to specific segments, subsets of questions, or the right number of respondents for Semilattice. However, just like with a real-world survey, heavy filtering of a dataset can reduce the quality of the resultant sample and can lead to lower accuracy Populations in Semilattice.
+    </Accordion>
+</AccordionGroup>
+
+## Seed data are not the only data
+A Population's seed data do not represent all of the information which Semilattice uses to make predictions. Most of the information comes from the Large Language Model (LLM) used by the [Simulation Engine](/simulation-engines/introduction), with the seed data effectively selecting the relevant information from the LLM.
+
+This means that you should think about the **predictive power** of the questions and answers in the seed data rather than the actual information contained in those questions.
+
+## Predictive power
+A Population's accuracy when predicting the answer to a new question is dependent on the predictive power of the questions and answers in its seed data. This predictive power varies depending on the question being predicted and is a function of how those seed data work with the [Simulation Engine](/simulation-engines/introduction).
+
+### Predictive power cannot be predicted
+Due to the black box nature of the LLMs used by Semilattice, it's not yet possible to tell which seed data have more predictive power with certainty.
+
+### Building intuition around predictive power
+An intuitive way of estimating the predictive power of a question is to think about how telling someone's answer to that question would be. For example, knowing someone's age tells you a lot more about them than knowing whether they prefer ketchup or mayonnaise. However, it's also important to consider the purpose of the Population you are building. If you work in R&D at Heinz, the latter question will have more predictive power for the questions you plan to predict.
+
+<Note>Predictive power is an area of research for Semilattice. If you want to go deeper, it maps broadly to the concept of [feature selection](https://en.wikipedia.org/wiki/Feature_selection) in machine learning & data mining.</Note>
+
+## Question selection best practices
+The subset of questions you include in your seed dataset has the biggest impact on the accuracy and predictive reach of your Population. These best practices will help you achieve the best results.
+<CardGroup cols={1}>
+  <Card title="Maximise predictive power" icon="circle-1">
+    Pick questions with the most predictive power for your research objective.
+  </Card>
+  <Card title="Minimise subjective overlap" icon="circle-2">
+    Pick a diverse set of questions, minimising questions which reveal similar information. For example, the questions "Do you prefer ketchup, mayonnaise, or mustard?" and "What is your favourite condiment on french fries?" have a high degree of subjective overlap.
+  </Card>
+  <Card title="Maximise the number of questions and responses" icon="circle-3">
+    While not strictly required, a dataset with 20 questions and 3,000 responses is recommended. Datasets of 1,000 responses and ~10 questions can also work well.
+  </Card>
+</CardGroup>

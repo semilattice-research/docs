@@ -2,54 +2,53 @@
 title: 'Introduction'
 description: "Populations model specific groups of people"
 ---
-![Population](/images/populations/hero.png)
-Populations are the most fundamental building block in Semilattice, connecting the platform to the real world.
+![Population](/images/populations/introduction/hero.png)
+Populations are the fundamental building block of Semilattice, connecting the platform to the real world.
 ## What is a Population?
 A Population is a model of a group of people which can be used to make predictions about those people. Populations have several key features.
 ### Target Population
 The most important feature of a Population is its target population: the specific group of people in reality which the Population aims to model. For example, a Population might model your customers, leads in a new vertical, or global DevOps Specialists. A Population's name usually describes its target population, but a specific target population field and the Population's description can provide further details.
 <Frame caption="A Population modelling global, professional devops specialists">
-    <img src="/images/populations/target_population.png" />
+    <img src="/images/populations/introduction/target_population.png" />
 </Frame>
 Populations can model essentially any group of people which can be defined, from general, macro populations like all US Adults to niche, micro populations like believers of the simulation hypothesis. However, to create a Population the right seed data is required.
 ### Seed Data
 Populations are defined primarily by their seed data: individual-level survey, poll, or questionnaire response data from the target population. 
 <Frame caption="Seed data for a Population of US Adults focused on social media">
-    <img src="/images/populations/seed_data.png" />
+    <img src="/images/populations/introduction/seed_data.png" />
 </Frame>
 Answers to between 5 and 20 questions from between 25 and 3,000 respondents are required to create a Population, with higher numbers of questions and respondents recommended. Selecting questions focused on a particular subject produces a Population which will produce more accurate predictions about that subject. Jump to the [seed data](/populations/seed-data) section to learn more.
 ### Evaluation Metrics
 Populations are automatically evaluated against true data when they are created. This produces evaluation scores which estimate how accurate the Population will be when making new predictions. These scores can be used to inform your confidence levels when making decisions based on Semilattice predictions.
 <Frame caption="Populations are evaluated for accuracy with three metrics">
-    <img src="/images/populations/evaluation_metrics.png" />
+    <img src="/images/populations/introduction/evaluation_metrics.png" />
 </Frame>
 Although accuracy levels are generally robust, different seed data produce Populations with different accuracy levels, allowing you to search for better models by testing different data. Jump to the [evaluation](/populations/evaluation) section to learn more.
 ### Simulation Engine
 Populations are pegged to a specific [Simulation Engine](/simulation-engines/introduction) when they are created. That Simulation Engine is then used to evaluate the Population and to produce all future predictions, ensuring the Population's evaluation scores represent its estimated accuracy for new predictions.
 <Frame caption="Populations are pegged to specific simulation engines">
-    <img src="/images/populations/simulation_engine.png" />
+    <img src="/images/populations/introduction/simulation_engine.png" />
 </Frame>
 Jump to the [Simulation Engine](/simulation-engines/introduction) section to learn more.
 ### Public vs. Private
-Populations can be public or private. All Semilattice users can view and use public Populations, while private Populations are only visable to and usable by their owners.
+Populations can be public or private. All Semilattice users can view and use public Populations, while private Populations are only visable to and usable by their owners. Logged-out users can also view public Populations, but cannot make predictions with them.
 <AccordionGroup>
-    <Accordion title="Private permissions">
-        | Permission | Owner | Other users |
-        | :--- | :---: | :---: |
-        | View & discover | <Icon icon="check" /> | <Icon icon="xmark" /> |
-        | Make predictions | <Icon icon="check" /> | <Icon icon="xmark" /> | 
-        | Edit | <Icon icon="check" /> | <Icon icon="xmark" /> |    
-    </Accordion>
     <Accordion title="Public permissions">
-        | Permission | Owner | Other users |
-        | :--- | :---: | :---: |
-        | View & discover | <Icon icon="check" /> | <Icon icon="check" /> |
-        | Make predictions | <Icon icon="check" /> | <Icon icon="check" /> | 
-        | Edit | <Icon icon="check" /> | <Icon icon="xmark" /> |   
+        | Permission | Owner | Logged-in users | Logged-out users |
+        | :--- | :---: | :---: | :---: |
+        | View & discover | <Icon icon="check" /> | <Icon icon="check" /> | <Icon icon="check" /> |
+        | Make predictions | <Icon icon="check" /> | <Icon icon="check" /> | <Icon icon="xmark" /> |
+        | Edit | <Icon icon="check" /> | <Icon icon="xmark" /> | <Icon icon="xmark" /> |
+    </Accordion>
+    <Accordion title="Private permissions">
+        | Permission | Owner | Logged-in users | Logged-out users |
+        | :--- | :---: | :---: | :---: |
+        | View & discover | <Icon icon="check" /> | <Icon icon="xmark" /> | <Icon icon="xmark" /> |
+        | Make predictions | <Icon icon="check" /> | <Icon icon="xmark" /> | <Icon icon="xmark" /> |
+        | Edit | <Icon icon="check" /> | <Icon icon="xmark" /> | <Icon icon="xmark" /> |
     </Accordion>
 </AccordionGroup>
 Population owners can toggle the publicity of their Populations from the Population context menu.
 <Frame caption="Populations can be public or private">
-    <img src="/images/populations/public_private.png" />
+    <img src="/images/populations/introduction/public_private.png" />
 </Frame>
-## Next steps
