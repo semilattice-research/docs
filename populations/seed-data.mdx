@@ -56,7 +56,7 @@ These considerations are useful to bear in mind.
         The order of the question columns in your seed data has no effect. Questions will be used in various ways, in various orders.
     </Accordion>
     <Accordion title="Answer option order is always random">
-        Answer options will be presented in random order by default. Answer options with semantic order (e.g. "Strongly Agree" to "Strongly Disagree") are perfectly valid, but answer options which assume an order (e.g. "None of the above") are not. Answer options like "None of the above" should be reformatted to stand along, e.g. "None".
+        Answer options will be presented in random order by default. Answer options with semantic order (e.g. "Strongly Agree" to "Strongly Disagree") are perfectly valid, but answer options which assume an order (e.g. "None of the above") are not. Answer options like "None of the above" should be reformatted to stand alone, e.g. "None".
     </Accordion>
     <Accordion title="Bigger datasets can be filtered, with caution">
         You can filter large datasets down to specific segments, subsets of questions, or the right number of respondents for Semilattice. However, just like with a real-world survey, heavy filtering of a dataset can reduce the quality of the resultant sample and can lead to lower accuracy Populations in Semilattice.
@@ -69,13 +69,13 @@ A Population's seed data do not represent all of the information which Semilatti
 This means that you should think about the **predictive power** of the questions and answers in the seed data rather than the actual information contained in those questions.
 
 ## Predictive power
-A Population's accuracy when predicting the answer to a new question is dependent on the predictive power of the questions and answers in its seed data. This predictive power varies depending on the question being predicted and is a function of how those seed data work with the [Simulation Engine](/simulation-engines/introduction).
+A Population's accuracy when predicting the answer to a new question is dependent on the predictive power of the questions and answers in its seed data. This predictive power varies depending on the question being predicted and is a function of how those seed data work with the Simulation Engine.
 
 ### Predictive power cannot be predicted
 Due to the black box nature of the LLMs used by Semilattice, it's not yet possible to tell which seed data have more predictive power with certainty.
 
 ### Building intuition around predictive power
-An intuitive way of estimating the predictive power of a question is to think about how telling someone's answer to that question would be. For example, knowing someone's age tells you a lot more about them than knowing whether they prefer ketchup or mayonnaise. However, it's also important to consider the purpose of the Population you are building. If you work in R&D at Heinz, the latter question will have more predictive power for the questions you plan to predict.
+An intuitive way of estimating the predictive power of a question is to think about how informative someone's answer to that question would be. For example, knowing someone's age tells you a lot more about them than knowing whether they prefer ketchup or mayonnaise. However, it's also important to consider the purpose of the Population you are building. If you work in R&D at Heinz, the latter question will have more predictive power for the questions you plan to predict.
 
 <Note>Predictive power is an area of research for Semilattice. If you want to go deeper, it maps broadly to the concept of [feature selection](https://en.wikipedia.org/wiki/Feature_selection) in machine learning & data mining.</Note>
 
