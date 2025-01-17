@@ -1,0 +1,54 @@
+---
+title: 'Introduction'
+description: "Questions are predictions of how a Population would answer a question"
+---
+![Population](/images/questions/introduction/hero.png)
+
+Questions are the primary output and core purpose of Semilattice, delivering information gain over the status quo.
+## What is a Question?
+A Question is a prediction of how a specific group of people, modeled as a Population, would respond to a single option multiple-choice question in aggregate. The result of a Question is a distribution of people over the different answer options, e.g. 65% say "Yes" and 35% say "No".
+
+The term "question" is used in various contexts to mean slightly different things in the context of Semilattice. Let's break these down.
+<AccordionGroup>
+    <Accordion title="Question">
+        "Question" with a capitalised "Q", means the Question feature. The Question feature lets you create predictions of how Populations would answer questions, lowercase "q": the actual open-ended propositions to which you seek answers.
+    </Accordion>
+    <Accordion title="question">
+        A "question" with a lowercase "q" means what "question" generally means: "a sentence worded or expressed so as to elicit information.
+    </Accordion>
+    <Accordion title="Target question">
+        A "target question" refers to a question which is being predicted. Describing it as a "target" question emphasises that its answer is unknown and the goal is to predict it accurately.
+    </Accordion>
+    <Accordion title="Ground truth or seed data question">
+        "Ground truth questions" or "seed data questions" refer to the question data used to create (and test) Populations. The term "question" is often used in the context of a Population's seed data or ground truth to mean both the question itself (e.g. "What is your age?") and its set of answers (e.g. ["21-25", "26-30", "21-25", "41-45", etc.]) from the target population.
+    </Accordion>
+    <Accordion title="Test question">
+        A "test question" is a ground truth or seed data question against which the Population has been tested. Since Semilattice tests Populations against their seed data, once a Population has been tested all its seed data questions are also test questions.
+    </Accordion>
+</AccordionGroup>
+## Single option multiple-choice questions
+Semilattice only accepts as input and only produces as output single option multiple-choice questions. This means a question to which there is a finite set of answer options of which the respondent can only choose one as their answer. For example:
+> To what degree do you believe reality is a computer simulation?
+> A) Definitely not a simulation
+> B) Probably not a simulation
+> C) Unsure / No opinion
+> D) Possibly a simulation
+> E) Very likely a simulation
+We have plans to expand the types of questions we support in the near future.
+
+<AccordionGroup>
+    <Accordion title="Public questions">
+        | Permission | Owner | Logged-in users | Logged-out users |
+        | :--- | :---: | :---: | :---: |
+        | View (with link) | <Icon icon="check" /> | <Icon icon="check" /> | <Icon icon="check" /> |
+        | Discover | <Icon icon="check" /> | <Icon icon="xmark" /> | <Icon icon="xmark" /> |
+        | Edit | <Icon icon="check" /> | <Icon icon="xmark" /> | <Icon icon="xmark" /> |
+    </Accordion>
+    <Accordion title="Private questions">
+        | Permission | Owner | Logged-in users | Logged-out users |
+        | :--- | :---: | :---: | :---: |
+        | View (with link) | <Icon icon="check" /> | <Icon icon="xmark" /> | <Icon icon="xmark" /> |
+        | Discover | <Icon icon="check" /> | <Icon icon="xmark" /> | <Icon icon="xmark" /> |
+        | Edit | <Icon icon="check" /> | <Icon icon="xmark" /> | <Icon icon="xmark" /> |
+    </Accordion>
+</AccordionGroup>
