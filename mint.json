@@ -43,25 +43,7 @@
       "icon": "globe",
       "pages": [
         "populations/introduction",
-        "populations/seed-data",
-        "populations/evaluation",
-        "populations/create-a-population"
-      ]
-    },
-    {
-      "group": "Questions",
-      "pages": [
-        "questions/introduction",
-        "questions/ask-a-question",
-        "questions/prediction-lifecycle",
-        "questions/interpreting-results"
-      ]
-    },
-    {
-      "group": "Simulation Engines",
-      "pages": [
-        "simulation-engines/introduction",
-        "simulation-engines/answers-engines"
+        "populations/seed-data"
       ]
     }
   ],
