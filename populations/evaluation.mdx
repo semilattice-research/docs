@@ -1,0 +1,75 @@
+---
+title: 'Evaluation'
+description: 'Populations are automatically evaluated for accuracy'
+---
+![Population Evaluation](/images/populations/evaluation/hero.png)
+
+Every Population on Semilattice is automatically evaluated for accuracy. Estimated accuracy scores are displayed when choosing Populations to make predictions and with results, so you can inform your confidence levels when making decisions.
+
+A Population's seed data is its biggest determinant of its accuracy. Semilattice's evaluation features enable you to explore how different seed data affect accuracy, iterating towards more accuracy Populations.
+
+Definintiions
+- seed data question, or ground truth question
+- target question, or unknown question
+
+## Where to find evaluation scores
+A Population's evaluation scores show up in 4 locations:
+<AccordionGroup>
+    <Accordion title="With the selected Population when asking a question">
+        ![Evaluation metrics when selecting population](/images/populations/evaluation/select_population.png)
+    </Accordion>
+    <Accordion title="Next to the Population at the top of a Question page">
+        ![Evaluation metrics when selecting population](/images/populations/evaluation/question.png)
+    </Accordion>
+    <Accordion title="On the Population page">
+        ![Evaluation metrics when selecting population](/images/populations/evaluation/population.png)
+    </Accordion>
+    <Accordion title="Next to each Population on the Populations page">
+        ![Evaluation metrics when selecting population](/images/populations/evaluation/populations.png)
+    </Accordion>
+</AccordionGroup>
+
+## Evaluation Fundamentals
+Before diving in to how Populations are evaluated in Semilattice, it's important to first define and explain a few fundamentals.
+### To know the accuracy, you must know the truth
+The accuracy of a predicted answer to a question can be measured by comparing it with the true answer to the question.
+### Populations necessarily make predictions of unknown accuracy
+Populations in Semilattice are intended to predict how a target population would answer a question to which the answer is not known. This means that what Semilattice does, fundamentally, is make predictions of unknown accuracy. Thus, unless or until the true answer becomes available, it's only possible to **estimate** the accuracy of predictions.
+### There are infinitely many unknown questions
+Theoretically, there are infinitely many unknown questions which you may want to predict with a Population. In reality, there will be a far smaller set of questions which you are actually interested in: questions relevant to your business or organisation; but the size of that set will still be extremely large. To measure the true accuracy of a Population would require knowing the answers to every one of these questions. Somewhat paradoxically, this would render the accuracy measurement unnecessary, since you wouldn't have any need to make predictions.
+### Estimated accuracies are always based on a sample of the possible questions
+Since it's impossible (and self-defeating) to know the true answers to all the possible questions, an accuracy estimate for a Population is always based on a subset, or a sample, of those questions.
+### The quality of an estimated accuracy depends on the quality of the sample
+The more representative the sample of questions used to calculate an estimated accuracy is of the total set of possible questions, the more representative the estimated accuracy is of the true accuracy.
+
+## Population Evaluation in Semilattice
+Semilattice employs two kinds of benchmarking methodologies to evaluate Population accuracy. Both of these methodologies are essentially the same. One of them (Internal) is built into the product as an automatic evaluation feature. The other (External) has been used as part of the research work which went into developing Semilattice and may be added as a product feature in the future.
+### Internal vs. External Benchmarking
+A Population's seed data, being ground truth data, can technically be used as benchmarking data. However, it is important not to test a Population against a question which is part of its seed data as the Population will already "know" the answer to that question, skewing the results positively. The solution to this is to temporarily remove that question (and its answers) from the seed data before using it as a benchmarking question. This approach enables **internal benchmarking**.
+
+Internal benchmarking is benchmarking a Population against the ground truth data in its seed data. This approach underpins Semilattice's **population test** feature, explained below.
+
+External benchmarking is benchmarking a Population against ground truth data which is not in its seed data but which is (ideally) from the same survey, poll, or questionnaire as that which the seed data came from. Through hundreds of tests, we have validated that both benchmarking approaches produce almost the same accuracy scores, but we plan to introduce an external benchmarking feature into the product in the future.
+
+### Population Tests
+Population tests benchmark a Population using its seed data. The validity of this approach rests on two important facts:
+1. Populations are not trained on their seed data
+2. When a seed data question is used as a benchmarking question, it is temporarily removed from the Population
+
+The core assumption is that each of the questions in the seed data could equally have not been in the seed data, making it representative of the set of unknown questionw which the Population is intended to be able to predict. The added advantage is that a Population can be automatically evaluated immediately without having to find additional, benchmarking data.
+
+### Testing Process
+When you click Test after creating a Population in Semilattice, the Population will go into **Testing** status and the system will go through each of its seed data questions and:
+1. Temporarily remove that seed data question (and all its answers) from the Population, creating a subset version of the Population
+2. Get that subset Population to predict the answer to that seed data question using the remaining seed data questions
+3. Compare the predicted answers with the ground truth answers from the seed data, calculating three different accuracy scores (below)
+Each seed data question will go through the following status changes: Uploaded (before the test) -> Test Queued -> Testing -> Tested. Once this process has been complete for all seed data questions in the Population, each question's accuracy scores will be averaged, producing Population-level accuracy metrics.
+
+With individual predictions taking up to 90 seconds, this process can take 90s * the number of questions in the Population. For a typical Population of 20 questions, the process can take around 30 minutes to complete. But it only has to be done once.
+
+## Metrics
+Semilattice uses 3 primary accuracy metrics, with a 4th metric calculated only at the individual question level.
+### Accuracy (1-MAE)
+### Squared Error (RMSE)
+### Normalised Information Loss (NKLD)
+### Information Loss (KLD)
