@@ -1,0 +1,60 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Semilattice",
+  "colors": {
+    "primary": "#29A383",
+    "light": "#29A383",
+    "dark": "#29A383"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Get Started",
+        "pages": [
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Populations",
+        "pages": [
+          "populations/introduction",
+          "populations/seed-data"
+        ],
+        "icon": "globe"
+      }
+    ]
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "background": {
+    "color": {
+      "light": "#F4FBF7",
+      "dark": "#1D3B31"
+    }
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "mailto:support@semilattice.ai"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://semilattice.ai/questions/new"
+    }
+  },
+  "footer": {
+    "socials": {
+      "website": "https://semilattice.ai",
+      "x": "https://x.com/semilatticeai",
+      "github": "https://github.com/semilattice-research",
+      "linkedin": "https://www.linkedin.com/company/semilattice"
+    }
+  }
+}
