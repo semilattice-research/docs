@@ -31,10 +31,7 @@
         },
         {
             "tab": "API Reference",
-            "openapi": {
-                "source": "https://api.semilattice.ai/openapi.json",
-                "directory": "api"
-            }
+            "openapi": "https://api.semilattice.ai/openapi.json"
         }
     ]
   },
