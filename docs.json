@@ -16,14 +16,14 @@
                 {
                     "group": "Get Started",
                     "pages": [
-                    "quickstart"
+                        "quickstart"
                     ]
                 },
                 {
                     "group": "Populations",
                     "pages": [
-                    "populations/introduction",
-                    "populations/seed-data"
+                        "populations/introduction",
+                        "populations/seed-data"
                     ],
                     "icon": "globe"
                 }
@@ -31,7 +31,36 @@
         },
         {
             "tab": "API Reference",
-            "openapi": "https://alexander-api.semilattice.ai/openapi.json"
+            "openapi": {
+                "source": "https://api.semilattice.ai/openapi.json",
+                "directory": "api-reference"
+            },
+            "groups": [
+                {
+                    "group": "Populations",
+                    "icon": "globe",
+                    "pages": [
+                        "api/populations/create-population",
+                        "api/populations/trigger-population-test",
+                        "api/populations/get-population"
+                    ]
+                },
+                {
+                    "group": "Answers",
+                    "pages": [
+                        "api/answers/simulate-answer-1",
+                        "api/answers/simulate-answer",
+                        "api/answers/get-answer"
+                    ]
+                },
+                {
+                    "group": "Objects",
+                    "pages": [
+                        "api/objects/answer",
+                        "api/objects/population"
+                    ]
+                }
+            ]
         }
     ]
   },
