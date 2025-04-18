@@ -9,21 +9,30 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "groups": [
-      {
-        "group": "Get Started",
-        "pages": [
-          "quickstart"
-        ]
-      },
-      {
-        "group": "Populations",
-        "pages": [
-          "populations/introduction",
-          "populations/seed-data"
-        ],
-        "icon": "globe"
-      }
+    "tabs": [
+        {
+            "tab": "Documentation",
+            "groups": [
+                {
+                    "group": "Get Started",
+                    "pages": [
+                    "quickstart"
+                    ]
+                },
+                {
+                    "group": "Populations",
+                    "pages": [
+                    "populations/introduction",
+                    "populations/seed-data"
+                    ],
+                    "icon": "globe"
+                }
+                ]
+        },
+        {
+            "tab": "API Reference",
+            "openapi": "https://alexander-api.semilattice.ai/openapi.json"
+        }
     ]
   },
   "logo": {
