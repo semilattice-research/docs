@@ -52,13 +52,6 @@
                         "api/answers/simulate-answer",
                         "api/answers/get-answer"
                     ]
-                },
-                {
-                    "group": "Objects",
-                    "pages": [
-                        "api/objects/answer",
-                        "api/objects/population"
-                    ]
                 }
             ]
         }
