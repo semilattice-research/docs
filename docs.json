@@ -28,6 +28,10 @@
                     "icon": "globe"
                 }
                 ]
+        },
+        {
+            "tab": "API Reference",
+            "openapi": "https://alexander-api.semilattice.ai/openapi.json"
         }
     ]
   },
