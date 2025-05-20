@@ -31,8 +31,7 @@
         },
         {
             "tab": "API Reference",
-            "hidden": true,
-            "openapi": "https://alexander-api.semilattice.ai/openapi.json"
+            "openapi": "https://api.semilattice.ai/openapi.json"
         }
     ]
   },
@@ -56,7 +55,7 @@
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://semilattice.ai/questions/new"
+      "href": "https://semilattice.ai/answers/new"
     }
   },
   "footer": {
