@@ -1,0 +1,163 @@
+---
+title: "Create a Population"
+description: "Create custom populations from your survey data"
+---
+
+Custom populations allow you to make predictions for your specific audience segments, customers, or user groups. This guide shows how to create populations programmatically using the Semilattice API.
+
+## Prerequisites
+
+Before creating a population, ensure you have:
+- Survey data in the [required CSV format](/populations/seed-data-requirements)
+- A valid Semilattice API key
+- The Semilattice SDK installed
+
+## Creating a Population
+
+<CodeGroup>
+```python Python
+from pathlib import Path
+from semilattice import Semilattice
+
+semilattice = Semilattice()
+
+population = semilattice.populations.create(
+    name="Developer Survey Q4 2024",
+    description="Survey of software developers conducted in Q4 2024",
+    seed_data=Path("developer_survey_data.csv"),
+    reality_target="Software Developers",
+    simulation_engine="answers-1",
+    simulation_options={},
+    run_test=False
+)
+```
+
+```javascript Node.js
+const { Semilattice } = require('semilattice');
+const fs = require('fs');
+
+const semilattice = new Semilattice();
+
+const population = await semilattice.populations.create({
+    name: "Developer Survey Q4 2024",
+    description: "Survey of software developers conducted in Q4 2024",
+    seed_data: fs.readFileSync("developer_survey_data.csv"),
+    reality_target: "Software Developers",
+    simulation_engine: "answers-1",
+    simulation_options: {},
+    run_test: false
+});
+```
+</CodeGroup>
+
+### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | string | Display name for your population |
+| `description` | string | Detailed description or documentation link |
+| `seed_data` | file/path | CSV file containing survey responses |
+| `reality_target` | string | Description of the target demographic |
+| `simulation_engine` | string | Engine version (typically "answers-1") |
+| `simulation_options` | object | Additional configuration options |
+| `run_test` | boolean | Whether to automatically test accuracy after creation |
+
+## Population Status Flow
+
+When you create a population, it goes through several status stages:
+
+### 1. Processing
+Initially, your population will have a `status` of **"Processing"** while Semilattice trains the model on your data.
+
+```python
+print(f"Population status: {population['data']['status']}")
+# Output: Population status: Processing
+```
+
+### 2. Untested
+Once processing completes, the status changes to **"Untested"**. At this point:
+- The population is ready to make predictions
+- We don't yet know its estimated accuracy
+- You can start using it for predictions, but reliability is unknown
+
+```python
+# Check status periodically
+updated_population = semilattice.populations.get(population['data']['id'])
+print(f"Status: {updated_population['data']['status']}")
+# Output: Status: Untested
+```
+
+## Testing Population Accuracy
+
+To understand how accurate your population will be, you need to run a population test.
+
+### Option 1: Automatic Testing
+
+Set `run_test=True` when creating the population:
+
+<CodeGroup>
+```python Python
+population = semilattice.populations.create(
+    name="Developer Survey Q4 2024",
+    description="Survey of software developers conducted in Q4 2024",
+    seed_data=Path("developer_survey_data.csv"),
+    reality_target="Software Developers",
+    simulation_engine="answers-1",
+    simulation_options={},
+    run_test=True  # Automatically test after processing
+)
+```
+
+```javascript Node.js
+const population = await semilattice.populations.create({
+    name: "Developer Survey Q4 2024",
+    description: "Survey of software developers conducted in Q4 2024",
+    seed_data: fs.readFileSync("developer_survey_data.csv"),
+    reality_target: "Software Developers",
+    simulation_engine: "answers-1",
+    simulation_options: {},
+    run_test: true  // Automatically test after processing
+});
+```
+</CodeGroup>
+
+With automatic testing, your population will progress through these statuses:
+**Processing** → **Untested** → **Testing** → **Tested**
+
+### Option 2: Manual Testing
+
+Alternatively, you can trigger testing manually on an "Untested" population:
+
+<CodeGroup>
+```python Python
+# Trigger testing manually
+test_result = semilattice.populations.test(
+    population_id=population['data']['id']
+)
+```
+
+```javascript Node.js
+// Trigger testing manually
+const testResult = await semilattice.populations.test({
+    population_id: population.data.id
+});
+```
+</CodeGroup>
+
+## Understanding Test Results
+
+Once testing is complete, your population will have:
+- **Status**: "Tested"
+- **Accuracy metrics**: Estimated performance scores
+- **Confidence levels**: Reliability indicators for predictions
+
+Learn more about interpreting these metrics in the [Evaluation](/populations/evaluation) section.
+
+## Next Steps
+
+1. **Wait for processing**: Monitor the population status until it's "Untested" or "Tested"
+2. **Review accuracy**: Check the evaluation metrics to understand prediction reliability
+3. **Start predicting**: Use the population ID in your prediction API calls
+4. **Iterate**: Create new populations with different data to improve accuracy
+
+For detailed requirements on preparing your CSV data, see [Seed Data Requirements](/populations/seed-data-requirements).

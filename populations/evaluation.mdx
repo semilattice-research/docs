@@ -1,0 +1,179 @@
+---
+title: "Evaluation"
+description: "Understanding population testing and accuracy metrics"
+---
+
+![Evaluation](/images/populations/evaluation/hero.png)
+
+Population evaluation measures how accurately your custom population can predict responses to new questions. This testing process provides confidence metrics that help you understand the reliability of your API predictions.
+
+## Why Test Populations?
+
+When you create a population, you get a model trained on your specific data. But without testing, you don't know:
+- How accurate predictions will be for new questions
+- Which types of questions the population handles well
+- Whether your training data was sufficient
+
+Population testing answers these questions by measuring performance against held-out data.
+
+## Testing Methodologies
+
+Semilattice uses two types of testing to evaluate population model accuracy:
+
+### Population Test (Internal)
+The default testing method uses your original seed data:
+1. **Question removal**: Temporarily removes each question and its answers from the model
+2. **Prediction**: Asks the model to predict answers for that removed question
+3. **Comparison**: Compares predictions to the actual responses from your seed data
+4. **Iteration**: Repeats this process across all questions in your dataset
+5. **Averaging**: Calculates average accuracy metrics across all questions
+
+<Frame caption="Population testing process">
+  <img src="/images/populations/evaluation/population.png" />
+</Frame>
+
+### Benchmarking Test (External)
+For more rigorous evaluation, you can test against separate data:
+- Uses completely separate test questions from the same target audience
+- Provides more reliable accuracy estimates for real-world performance
+- Currently available via API (UI support coming soon)
+
+<Note>Most accuracy scores in the product come from population tests (internal). The degree to which these represent real-world performance depends on how well your seed data represents the types of questions you'll ask in production.</Note>
+
+## Evaluation Metrics
+
+<Frame caption="Four key accuracy metrics">
+  <img src="/images/populations/evaluation/evaluation_metrics.png" />
+</Frame>
+
+Semilattice calculates four metrics, with three providing population-level averages:
+
+### Accuracy (Inverted Mean Absolute Error)
+- **Field**: `accuracy` (displayed as 1 - MAE)
+- **Range**: 0 to 100% (higher is better)
+- **Meaning**: Overall prediction accuracy as a percentage
+- **Example**: 85% accuracy means predictions are typically within 15% of actual results
+
+### Root Mean Squared Error (RMSE)
+- **Field**: `root_mean_squared_error`
+- **Range**: 0 to 100% (lower is better)
+- **Meaning**: Penalizes large prediction errors more heavily than small ones
+- **Use case**: Identifies populations that occasionally make very wrong predictions
+
+### Normalized Information Loss (NKLD)
+- **Field**: `normalised_kullback_leibler_divergence`
+- **Range**: 0 to 1+ (lower is better)
+- **Meaning**: Measures how different the predicted distribution is from reality
+- **Use case**: Best overall measure of prediction quality, normalized by number of answer options
+
+### Information Loss (KLD)
+- **Field**: `kullback_leibler_divergence`
+- **Range**: Varies by question (lower is better)
+- **Meaning**: Raw divergence measure, not comparable between questions
+- **Use case**: Question-specific analysis only (not averaged across populations)
+
+## Interpreting Results
+
+Based on Semilattice's benchmarking data, here are the thresholds for good performance:
+
+### Good Performance Thresholds
+- **Accuracy**: Above 85% (benchmarking average: 87.39%)
+- **RMSE**: Below 18% (benchmarking average: 16.86%)
+- **Normalized Information Loss**: Below 0.1 (benchmarking average: 0.0569)
+
+### Benchmarking Context
+These thresholds come from extensive benchmarking work:
+
+| Metric | Good Threshold | Benchmarking Average | Benchmarking Range |
+|--------|----------------|----------------------|--------------------|
+| **Accuracy** | Above 85% | 87.39% | 82.98% - 92.21% |
+| **RMSE** | Below 18% | 16.86% | 10.09% - 24.42% |
+| **Normalized Information Loss** | Below 0.1 | 0.0569 | 0.0244 - 0.1006 |
+
+<Note>We increasingly find Normalized Information Loss to be the best single metric, but usually expect scores across all three metrics to be "good" to consider a population model reliable.</Note>
+
+## Accessing Evaluation Results
+
+Once testing is complete, metrics are available in API responses:
+
+<CodeGroup>
+```python Python
+# Get population with evaluation metrics
+population = semilattice.populations.get(population_id)
+
+print(f"Accuracy: {population['data']['accuracy']}%")
+print(f"RMSE: {population['data']['root_mean_squared_error']}%")
+print(f"Normalized Information Loss: {population['data']['normalised_kullback_leibler_divergence']}")
+print(f"Information Loss: {population['data']['kullback_leibler_divergence']}")
+```
+
+```javascript Node.js
+// Get population with evaluation metrics
+const population = await semilattice.populations.get(population_id);
+
+console.log(`Accuracy: ${population.data.accuracy}%`);
+console.log(`RMSE: ${population.data.root_mean_squared_error}%`);
+console.log(`Normalized Information Loss: ${population.data.normalised_kullback_leibler_divergence}`);
+console.log(`Information Loss: ${population.data.kullback_leibler_divergence}`);
+```
+</CodeGroup>
+
+## Using Metrics in Production
+
+### Decision Framework
+```python
+def should_use_population(population_metrics):
+    accuracy = population_metrics['accuracy']
+    rmse = population_metrics['root_mean_squared_error']
+    nkld = population_metrics['normalised_kullback_leibler_divergence']
+    
+    if accuracy > 85 and rmse < 18 and nkld < 0.1:
+        return "high_confidence"
+    elif accuracy > 80 and rmse < 25 and nkld < 0.15:
+        return "medium_confidence"
+    else:
+        return "low_confidence"
+```
+
+### Confidence Levels
+- **High confidence**: Meets all "good" thresholds - suitable for critical business decisions
+- **Medium confidence**: Decent performance - good for research and general insights
+- **Low confidence**: Below recommended thresholds - consider improving training data or methodology
+
+## Improving Population Accuracy
+
+If your evaluation metrics are poor, try:
+
+### 1. More Training Data
+- **Increase respondents**: More survey responses usually improve accuracy
+- **Add questions**: 15-20 questions typically work better than 5-10
+
+### 2. Better Questions
+- **Higher predictive power**: Include questions that reveal more about your target group
+- **Reduce overlap**: Avoid multiple questions that measure the same thing
+- **Clear language**: Ensure questions are unambiguous
+
+### 3. Data Quality
+- **Consistent responses**: Check for survey fatigue or random responses
+- **Representative sample**: Ensure your respondents match your target population
+- **Complete data**: Minimize missing responses
+
+## Question-Specific Performance
+
+<Frame caption="Performance varies by question type">
+  <img src="/images/populations/evaluation/question.png" />
+</Frame>
+
+Some important notes:
+- **Subject expertise**: Populations predict better for topics covered in training data
+- **Question similarity**: Predictions are more accurate for questions similar to training questions
+- **Complexity**: Simple preference questions often predict better than complex reasoning questions
+
+## Next Steps
+
+1. **Review your metrics** to understand population reliability
+2. **Test with similar questions** to validate performance for your use case
+3. **Set confidence thresholds** based on your risk tolerance
+4. **Iterate on training data** if accuracy is insufficient
+
+For guidance on improving your training data, see [Seed Data Requirements](/populations/seed-data-requirements).

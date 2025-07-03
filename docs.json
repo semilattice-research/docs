@@ -16,16 +16,29 @@
                 {
                     "group": "Get Started",
                     "pages": [
-                        "quickstart"
+                        "introduction",
+                        "python-quickstart",
+                        "nodejs-quickstart"
                     ]
                 },
                 {
                     "group": "Populations",
                     "pages": [
                         "populations/introduction",
-                        "populations/seed-data"
+                        "populations/create-population",
+                        "populations/seed-data-requirements",
+                        "populations/evaluation"
                     ],
                     "icon": "globe"
+                },
+                {
+                    "group": "Answers",
+                    "pages": [
+                        "answers/introduction",
+                        "answers/simulate-answer",
+                        "answers/benchmark-answer"
+                    ],
+                    "icon": "message-question"
                 }
                 ]
         },

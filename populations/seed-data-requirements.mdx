@@ -1,0 +1,132 @@
+---
+title: 'Seed Data Requirements'
+description: "CSV format and data quality requirements for population creation"
+---
+![Seed Data](/images/populations/seed_data/hero.png)
+
+This page outlines the technical requirements and best practices for preparing CSV data to create custom populations. Your data quality directly impacts prediction accuracy, so following these guidelines is essential.
+
+## Overview
+
+Your CSV file should contain survey responses where each row represents one respondent and each column represents their answer to a multiple-choice question. This data trains your population model to make accurate predictions for similar groups.
+
+### CSV Format Requirements
+
+Your CSV file must meet these technical specifications:
+
+| Requirement | Value | Notes |
+|-------------|-------|-------|
+| **First column** | `sim_id` | Unique identifier for each respondent |
+| **Question columns** | 5-20 | Each column header is the question text |
+| **Respondent rows** | 25-3,000 | More respondents = better accuracy |
+| **Question length** | 3-300 characters | Clear, concise questions work best |
+| **Answer length** | Max 200 characters | Short, distinct answer options |
+| **Missing data** | Max 5% empty cells | Minimal gaps in responses |
+| **Answer options** | 1-15 per question | Multiple choice options |
+
+```csv
+sim_id,"What's your primary role?","How many years of experience?","Preferred development environment?"
+1,"Software Engineer","3-5 years","VS Code"
+2,"Product Manager","1-2 years","Notion"
+3,"Data Scientist","5+ years","Jupyter"
+```
+
+### Data Quality Guidelines
+
+While the API accepts any CSV meeting technical requirements, following these guidelines ensures better population accuracy:
+<AccordionGroup>
+    <Accordion title="Headers should be clear questions">
+        Column headers become the question text in API responses. Use complete questions: "What is your favorite color?" rather than just "Color".
+    </Accordion>
+    <Accordion title="Each question should be self-contained">
+        Questions can't reference other questions. Avoid "How strongly do you feel about your previous answer?" Instead, make each question standalone: "How important is work-life balance to you?"
+    </Accordion>
+    <Accordion title="Answer options should be independent">
+        Avoid answer options like "None of the above" or "All of the above" since their meaning depends on other options. Use specific alternatives: "None" or "Other".
+    </Accordion>
+    <Accordion title="Use human-readable text">
+        Convert survey codes to full text. Instead of "Q1_A3", use "Very satisfied". This ensures accurate API predictions since the AI understands natural language.
+    </Accordion>
+    <Accordion title="All questions and answers should come from the same survey, poll, or questionnaire">
+        Mixing data from different samples is not recommended. Semilattice assumes seed data come from a single survey, poll, or questionnaire.
+    </Accordion>
+    <Accordion title="Answers in a row should all come from the same person">
+        Mixing answers from different people is not recommended. Semilattice assumes all the answers in a row come from the same person.
+    </Accordion>
+</AccordionGroup>
+
+### Good to know
+These considerations are useful to bear in mind.
+<AccordionGroup>
+    <Accordion title="The unique values in a column define the question's answer options">
+        The set of unique values in a column define the answer options for the question in that column. For example, the unique values under the question header "What is your favourite colour?" may be: "Red", "Green", "Blue", "Yellow", "Purple", "Orange", "Teal", "Pink", "Brown", "Indigo".
+    </Accordion>
+    <Accordion title="Other types of questions can be reformatted to be compatible, with caution">
+        Questions which were originally posed as single option multiple-choice questions are recommended, but if necessary other, compatible types of questions can be reformatted. For example, multiple selection questions (e.g. "Choose all that apply...") can be reformatted into one binary question for each selection option (e.g. "Do you do X?", "Do you do Y?", ...). Or you can group and recode respondents' answers to free text questions to make a single option multiple-choice question. Caution is advised though: the more you reformat, the more your seed data will diverge from reality.
+    </Accordion>
+    <Accordion title="Question order doesn't matter">
+        The order of the question columns in your seed data has no effect. Questions will be used in various ways, in various orders.
+    </Accordion>
+    <Accordion title="Answer option order is always random">
+        Answer options will be presented in random order by default. Answer options with semantic order (e.g. "Strongly Agree" to "Strongly Disagree") are perfectly valid, but answer options which assume an order (e.g. "None of the above") are not. Answer options like "None of the above" should be reformatted to stand alone, e.g. "None".
+    </Accordion>
+    <Accordion title="Bigger datasets can be filtered, with caution">
+        You can filter large datasets down to specific segments, subsets of questions, or the right number of respondents for Semilattice. However, just like with a real-world survey, heavy filtering of a dataset can reduce the quality of the resultant sample and can lead to lower accuracy Populations in Semilattice.
+    </Accordion>
+</AccordionGroup>
+
+## How Population Training Works
+
+Your CSV data trains the population model, but predictions also leverage Semilattice's underlying AI. The training data acts as a "filter" that selects relevant knowledge from the AI model.
+
+This means your questions should have **predictive power** - they should reveal information that correlates with how your target group would answer new questions.
+
+## Choosing Training Questions
+
+The questions in your training data determine prediction accuracy. Better training questions lead to more accurate API responses.
+
+### What makes a good training question?
+
+Think about how informative each answer would be:
+- **High predictive power**: Age, profession, education level, core values
+- **Low predictive power**: Favorite color, random preferences unrelated to your use case
+- **Context-dependent**: Food preferences matter for restaurant surveys but not for software feedback
+
+### Example: Developer Population
+
+```csv
+sim_id,"Years of experience?","Primary language?","Team size?","Remote work preference?"
+1,"5+ years","Python","10+ people","Fully remote"
+2,"1-2 years","JavaScript","2-5 people","Hybrid"
+```
+
+These questions would help predict developer attitudes toward new frameworks, tools, or methodologies.
+
+
+## Best Practices for API-Ready Populations
+
+<CardGroup cols={1}>
+  <Card title="Target your API use case" icon="target">
+    Choose training questions that relate to the types of predictions you'll make via API. Building a customer feedback population? Include questions about satisfaction, preferences, and demographics.
+  </Card>
+  <Card title="Avoid redundant questions" icon="arrows-cross">
+    Don't include multiple questions that reveal the same information. "Preferred condiment" and "Favorite fries topping" are too similar.
+  </Card>
+  <Card title="Maximize data quality" icon="chart-line">
+    Aim for 20 questions and 1,000+ responses. More training data typically means better API prediction accuracy.
+  </Card>
+  <Card title="Test with real questions" icon="flask">
+    After creating your population, test it with questions similar to your API use case to validate accuracy.
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+Once your CSV data meets these requirements:
+
+1. **Use the create population API** as shown in [Create a Population](/populations/create-population)
+2. **Monitor processing status** until your population is ready
+3. **Run accuracy tests** to understand prediction reliability
+4. **Start making predictions** using your population ID
+
+For the complete workflow, see [Create a Population](/populations/create-population).

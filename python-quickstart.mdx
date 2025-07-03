@@ -1,0 +1,119 @@
+---
+title: "Python"
+description: "Get started with Semilattice's Python SDK"
+---
+
+## Get your API key
+
+First, [sign up](https://semilattice.ai/sign-up) for a Semilattice account and create an API key from your dashboard.
+
+## Install
+
+Install the Semilattice Python SDK:
+
+```bash
+pip install semilattice
+```
+
+## Initialize the client
+
+```python
+import os
+from semilattice import Semilattice
+
+semilattice = Semilattice(
+    api_key=os.environ.get("SEMILATTICE_API_KEY"),  # This is the default and can be omitted
+)
+```
+
+## Choose a Population Model
+
+Navigate to the [Populations page](https://semilattice.ai/populations) on your dashboard and select a population model to use. Copy the UUID from the address bar after `/populations/...` (we'll improve this experience in the future).
+
+## Simulate an answer
+
+```python
+result = semilattice.answers.simulate(
+    population_id="your-population-uuid-here",
+    answers={
+        "question": "Rain or wind, what's worse?",
+        "question_options": {"question_type": "single-choice"},
+        "answer_options": ["Rain", "Wind"]
+    }
+)
+```
+
+## Handle the response
+
+The API will return immediately, but the simulation runs asynchronously. The initial response will have a `status` field set to "Queued":
+
+```python
+{
+    'data': [
+        {
+            'id': '84a92e29-54e6-4a60-862d-26cd2a78421e',
+            'created_at': '2025-06-06T18:18:43.370198Z',
+            'simulated_answer_percentages': None,
+            'population': 'd670f351-8567-4586-9bba-b81add1bebe3',
+            'status': 'Queued',
+            'answer_options': ['Rain', 'Wind'],
+            'population_name': 'US Adults',
+            'question': 'Rain or wind, what\'s worse?',
+            # ... other fields
+        }
+    ],
+    'errors': []
+}
+```
+
+## Poll for results
+
+The simulation will progress through these statuses: `Queued` → `Running` → `Predicted` (or potentially `Failed`). Predictions typically take less than a minute.
+
+Poll for the result using the answer ID:
+
+```python
+import time
+
+answer_id = result['data'][0]['id']
+
+while True:
+    answer = semilattice.answers.get(answer_id)
+    
+    if answer['data']['status'] == 'Predicted':
+        print("Simulation complete!")
+        print(f"Results: {answer['data']['simulated_answer_percentages']}")
+        break
+    elif answer['data']['status'] == 'Failed':
+        print("Simulation failed")
+        break
+    
+    print(f"Status: {answer['data']['status']}")
+    time.sleep(5)  # Wait 5 seconds before checking again
+```
+
+## View the results
+
+Once the simulation completes, the `simulated_answer_percentages` field will contain the prediction results:
+
+```python
+{
+    'data': {
+        'id': '84a92e29-54e6-4a60-862d-26cd2a78421e',
+        'simulated_answer_percentages': {'Rain': 0.5488, 'Wind': 0.4512},
+        'status': 'Predicted',
+        'prediction_finished_at': '2025-06-06T18:19:36.418871Z',
+        'answer_options': ['Rain', 'Wind'],
+        'population_name': 'US Adults',
+        'question': 'Rain or wind, what\'s worse?',
+        # ... other fields
+    },
+    'errors': []
+}
+```
+
+The `simulated_answer_percentages` dictionary shows the predicted percentage of the population that would choose each answer option. In this example, 54.88% would choose "Rain" and 45.12% would choose "Wind".
+
+## Next steps
+
+Now that you've run your first simulation, explore the [API Reference](/api-reference) to learn about all available endpoints and options.

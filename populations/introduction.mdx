@@ -1,77 +1,103 @@
 ---
-title: "Introduction"
-description: "Populations model specific groups of people"
+title: "What are Populations?"
+description: "Understanding population models for API integration"
 ---
 
 ![Population](/images/populations/introduction/hero.png)
 
-Populations are the fundamental building block of Semilattice, connecting the platform to the real world.
+Populations are the core of Semilattice's prediction engine. When you make API calls to simulate answers, you're selecting a specific population model that represents the group of people you want to predict.
 
 ## What is a Population?
 
-A Population is a model of a group of people which can be used to make predictions about those people. Populations have several key features.
+A Population is a trained model that represents a specific group of people. When you call the API with a `population_id`, you're telling Semilattice which group to simulate. Each population has unique characteristics that affect prediction accuracy and scope.
 
 ### Target Population
 
-The most important feature of a Population is its target population: the specific group of people in reality which the Population aims to model. For example, a Population might model your customers, leads in a new vertical, or global DevOps Specialists. A Population's name usually describes its target population, but a specific target population field and the Population's description can provide further details.
+Each population targets a specific demographic or psychographic group. For example:
+- `dev-population-uuid` might target software developers
+- `marketing-exec-uuid` might target marketing executives
+- `us-adults-uuid` might target general US adults
+
+When choosing a `population_id` for your API calls, select the one that best matches your target audience.
 
 <Frame caption="A Population modelling global, professional devops specialists">
   <img src="/images/populations/introduction/target_population.png" />
 </Frame>
 
-Populations can model essentially any group of people which can be defined, from general, macro populations like all US Adults to niche, micro populations like believers of the simulation hypothesis. However, to create a Population the right seed data is required.
+Populations range from broad demographic groups to highly specific niches. The more specific the population, the more accurate predictions will be for that specific group, but the narrower the scope of applicable questions.
 
-### Seed Data
-Populations are defined primarily by their seed data: individual-level survey, poll, or questionnaire response data from the target population.
+### Training Data
+Populations are trained on real survey data from their target demographic. This training data determines:
+- **Prediction accuracy**: How well the model predicts for similar questions
+- **Subject expertise**: What topics the population can predict accurately
+- **Response patterns**: How the group typically answers questions
 
-<Frame caption="Seed data for a Population of US Adults focused on social media">
+<Frame caption="Training data determines population behavior">
   <img src="/images/populations/introduction/seed_data.png" />
 </Frame>
 
-Answers to between 5 and 20 questions from between 25 and 3,000 respondents are required to create a Population, with higher numbers of questions and respondents recommended. Selecting questions focused on a particular subject produces a Population which will produce more accurate predictions about that subject. Jump to the [seed data](/populations/seed-data) section to learn more.
+Learn more about how populations are trained in the [seed data](/populations/seed-data) section.
 
-### Evaluation Metrics
+### Accuracy Metrics
 
-Populations are automatically evaluated against true data when they are created. This produces evaluation scores which estimate how accurate the Population will be when making new predictions. These scores can be used to inform your confidence levels when making decisions based on Semilattice predictions.
+Every population includes accuracy metrics that help you understand prediction reliability:
 
-<Frame caption="Populations are evaluated for accuracy with three metrics">
+<Frame caption="Accuracy metrics help assess prediction confidence">
   <img src="/images/populations/introduction/evaluation_metrics.png" />
 </Frame>
 
-Although accuracy levels are generally robust, different seed data produce Populations with different accuracy levels, allowing you to search for better models by testing different data. Jump to the [evaluation](/populations/evaluation) section to learn more.
+These metrics appear in API responses and help you:
+- Choose the right population for your use case
+- Set appropriate confidence levels for your predictions
+- Understand the reliability of specific results
 
 ### Simulation Engine
 
-Populations are pegged to a specific Simulation Engine when they are created. That Simulation Engine is then used to evaluate the Population and to produce all future predictions, ensuring the Population's evaluation scores represent its estimated accuracy for new predictions.
+Each population uses a specific version of Semilattice's simulation engine. This ensures:
+- **Consistency**: All predictions use the same model version
+- **Accuracy**: Evaluation metrics reflect real prediction performance
+- **Reliability**: Results are reproducible
 
-<Frame caption="Populations are pegged to specific simulation engines">
+<Frame caption="Populations use consistent simulation engines">
   <img src="/images/populations/introduction/simulation_engine.png" />
 </Frame>
 
-### Public vs. Private
+The `simulation_engine` field in API responses tells you which version was used.
 
-Populations can be public or private. All Semilattice users can view and use public Populations, while private Populations are only visable to and usable by their owners. Logged-out users can also view public Populations, but cannot make predictions with them.
+### Public vs. Private Populations
+
+When making API calls, you can access:
+- **Public populations**: Available to all users with valid API keys
+- **Private populations**: Only accessible to the owner's API key
 
 <AccordionGroup>
-  <Accordion title="Public permissions">
-    | Permission       |         Owner         |    Logged-in users    |    Logged-out users   |
-    | :--------------- | :-------------------: | :-------------------: | :-------------------: |
-    | View & discover  | <Icon icon="check" /> | <Icon icon="check" /> | <Icon icon="check" /> |
-    | Make predictions | <Icon icon="check" /> | <Icon icon="check" /> | <Icon icon="xmark" /> |
-    | Edit             | <Icon icon="check" /> | <Icon icon="xmark" /> | <Icon icon="xmark" /> |
+  <Accordion title="Public populations">
+    - Can be used by any authenticated API user
+    - Ideal for common demographics ("US Adults", "Software Developers")
+    - UUIDs can be shared in documentation and examples
   </Accordion>
 
-  <Accordion title="Private permissions">
-    | Permission       |         Owner         |    Logged-in users    |    Logged-out users   |
-    | :--------------- | :-------------------: | :-------------------: | :-------------------: |
-    | View & discover  | <Icon icon="check" /> | <Icon icon="xmark" /> | <Icon icon="xmark" /> |
-    | Make predictions | <Icon icon="check" /> | <Icon icon="xmark" /> | <Icon icon="xmark" /> |
-    | Edit             | <Icon icon="check" /> | <Icon icon="xmark" /> | <Icon icon="xmark" /> |
+  <Accordion title="Private populations">
+    - Only accessible with the owner's API key
+    - Perfect for proprietary customer segments
+    - UUIDs should be kept secure like API keys
   </Accordion>
 </AccordionGroup>
 
-Population owners can toggle the publicity of their Populations from the Population context menu.
-
-<Frame caption="Populations can be public or private">
+<Frame caption="API access depends on population privacy settings">
   <img src="/images/populations/introduction/public_private.png" />
 </Frame>
+
+## Finding Population IDs
+
+To use a population in your API calls, you need its UUID. You can find population IDs by:
+
+1. **Dashboard**: Browse populations at [semilattice.ai/populations](https://semilattice.ai/populations) and copy the UUID from the URL
+2. **API**: Use the populations endpoint to list available populations programmatically
+
+```python
+# Example: List available populations
+populations = semilattice.populations.list()
+for pop in populations['data']:
+    print(f"{pop['name']}: {pop['id']}")
+```

@@ -1,0 +1,271 @@
+---
+title: "Simulate an Answer"
+description: "Predict how populations respond to new questions"
+---
+
+Answer simulation lets you predict how a specific population would respond to new questions. This is the core functionality for market research, product decisions, and understanding audience preferences.
+
+## Basic Usage
+
+<CodeGroup>
+```python Python
+from semilattice import Semilattice
+
+semilattice = Semilattice()
+
+result = semilattice.answers.simulate(
+    population_id="d670f351-8567-4586-9bba-b81add1bebe3",
+    answers={
+        "question": "Which is worse?",
+        "question_options": {"question_type": "single-choice"},
+        "answer_options": ["Tech debt", "Confusing error messages"]
+    }
+)
+```
+
+```javascript Node.js
+const { Semilattice } = require('semilattice');
+
+const semilattice = new Semilattice();
+
+const result = await semilattice.answers.simulate({
+    population_id: "d670f351-8567-4586-9bba-b81add1bebe3",
+    answers: {
+        question: 'Which is worse?', 
+        question_options: { question_type: 'single-choice' },
+        answer_options: ["Tech debt", "Confusing error messages"]
+    },
+});
+```
+</CodeGroup>
+
+## Question Types
+
+### Single-Choice Questions
+Respondents select exactly one option:
+
+<CodeGroup>
+```python Python
+result = semilattice.answers.simulate(
+    population_id="your-population-id",
+    answers={
+        "question": "What's your preferred IDE?",
+        "question_options": {"question_type": "single-choice"},
+        "answer_options": ["VS Code", "IntelliJ", "Vim", "Sublime Text"]
+    }
+)
+```
+
+```javascript Node.js
+const result = await semilattice.answers.simulate({
+    population_id: "your-population-id",
+    answers: {
+        question: "What's your preferred IDE?",
+        question_options: { question_type: "single-choice" },
+        answer_options: ["VS Code", "IntelliJ", "Vim", "Sublime Text"]
+    }
+});
+```
+</CodeGroup>
+
+### Multiple-Choice Questions
+Respondents can select multiple options:
+
+<CodeGroup>
+```python Python
+result = semilattice.answers.simulate(
+    population_id="your-population-id",
+    answers={
+        "question": "Which programming languages do you use regularly?",
+        "question_options": {"question_type": "multiple-choice"},
+        "answer_options": ["Python", "JavaScript", "Java", "Go", "Rust"]
+    }
+)
+```
+
+```javascript Node.js
+const result = await semilattice.answers.simulate({
+    population_id: "your-population-id",
+    answers: {
+        question: "Which programming languages do you use regularly?",
+        question_options: { question_type: "multiple-choice" },
+        answer_options: ["Python", "JavaScript", "Java", "Go", "Rust"]
+    }
+});
+```
+</CodeGroup>
+
+### Open-Ended Questions
+Respondents provide free-text answers (currently in alpha):
+
+<CodeGroup>
+```python Python
+result = semilattice.answers.simulate(
+    population_id="your-population-id",
+    answers={
+        "question": "What's the biggest challenge facing developers today?",
+        "question_options": {"question_type": "open-ended"}
+        # No answer_options needed for open-ended
+    }
+)
+```
+
+```javascript Node.js
+const result = await semilattice.answers.simulate({
+    population_id: "your-population-id",
+    answers: {
+        question: "What's the biggest challenge facing developers today?",
+        question_options: { question_type: "open-ended" }
+        // No answer_options needed for open-ended
+    }
+});
+```
+</CodeGroup>
+
+## Handling Async Results
+
+Simulations run asynchronously. The initial response has `status: "Queued"`, and you need to poll for completion:
+
+### Initial Response
+```json
+{
+    "data": [
+        {
+            "id": "84a92e29-54e6-4a60-862d-26cd2a78421e",
+            "status": "Queued",
+            "question": "Which is worse?",
+            "answer_options": ["Tech debt", "Confusing error messages"],
+            "simulated_answer_percentages": null,
+            "ground_answer_percentages": null,
+            "accuracy": null,
+            // ... other fields
+        }
+    ]
+}
+```
+
+### Polling for Results
+
+<CodeGroup>
+```python Python
+import time
+
+answer_id = result['data'][0]['id']
+
+while True:
+    answer = semilattice.answers.get(answer_id)
+    
+    if answer['data']['status'] == 'Predicted':
+        print("Simulation complete!")
+        break
+    elif answer['data']['status'] == 'Failed':
+        print("Simulation failed")
+        break
+    
+    print(f"Status: {answer['data']['status']}")
+    time.sleep(5)  # Wait 5 seconds before checking again
+```
+
+```javascript Node.js
+const answerId = result.data[0].id;
+
+while (true) {
+    const answer = await semilattice.answers.get(answerId);
+    
+    if (answer.data.status === 'Predicted') {
+        console.log("Simulation complete!");
+        break;
+    } else if (answer.data.status === 'Failed') {
+        console.log("Simulation failed");
+        break;
+    }
+    
+    console.log(`Status: ${answer.data.status}`);
+    await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+}
+```
+</CodeGroup>
+
+## Understanding Results
+
+### Single-Choice and Multiple-Choice Results
+The `simulated_answer_percentages` shows the predicted distribution across your answer options:
+
+```json
+{
+    "data": {
+        "id": "84a92e29-54e6-4a60-862d-26cd2a78421e",
+        "status": "Predicted",
+        "question": "Which is worse?",
+        "answer_options": ["Tech debt", "Confusing error messages"],
+        "simulated_answer_percentages": {
+            "Tech debt": 0.5488,
+            "Confusing error messages": 0.4512
+        },
+        "ground_answer_percentages": null,
+        "accuracy": null
+    }
+}
+```
+
+This means:
+- 54.88% of the population would choose "Tech debt"
+- 45.12% would choose "Confusing error messages"
+
+### Open-Ended Results
+For open-ended questions, `simulated_answer_percentages` contains many unique responses:
+
+```json
+{
+    "simulated_answer_percentages": {
+        "Keeping up with new technologies": 0.23,
+        "Managing technical debt": 0.18,
+        "Poor documentation": 0.15,
+        "Debugging complex issues": 0.12,
+        "Time constraints and deadlines": 0.10,
+        "Communication with stakeholders": 0.08,
+        "Legacy system maintenance": 0.07,
+        "Security concerns": 0.04,
+        "Team coordination": 0.03
+        // ... many more unique responses
+    }
+}
+```
+
+## Important Notes for Simulated Answers
+
+### No Ground Truth Data
+For simulated answers, these fields are always `null`:
+- `ground_answer_percentages`: We don't know the real-world distribution
+- `ground_answer_counts`: We don't have actual response counts
+- `accuracy`: We can't measure accuracy without ground truth
+- All evaluation metrics (MAE, RMSE, etc.): Not applicable without ground truth
+
+### Accuracy Estimation
+The reliability of simulated predictions depends on:
+1. **Population quality**: Check your population's evaluation metrics
+2. **Question similarity**: How closely your question matches the population's training data
+3. **Subject expertise**: Whether the population was trained on relevant topics
+
+### Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Choose the right population" icon="target">
+    Select populations trained on data similar to your target audience and question topics.
+  </Card>
+  <Card title="Review population metrics" icon="chart-line">
+    Check the population's accuracy scores before relying on predictions for critical decisions.
+  </Card>
+  <Card title="Use clear questions" icon="message">
+    Write unambiguous questions with distinct answer options to get reliable predictions.
+  </Card>
+  <Card title="Validate with benchmarks" icon="flask">
+    Test your population with known questions before using it for important predictions.
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+- **Validate accuracy**: Use [benchmark testing](/answers/benchmark-answer) to verify your population's performance
+- **Improve populations**: Create better populations with more relevant [training data](/populations/seed-data-requirements)
+- **Scale your research**: Integrate answer simulation into your product research workflow
