@@ -19,26 +19,40 @@
                         "introduction",
                         "python-quickstart",
                         "nodejs-quickstart"
-                    ]
+                    ],
+                    "icon": "rocket"
                 },
                 {
-                    "group": "Populations",
+                    "group": "Learn",
                     "pages": [
-                        "populations/introduction",
-                        "populations/create-population",
-                        "populations/seed-data-requirements",
-                        "populations/evaluation"
+                        {
+                            "group": "Populations",
+                            "pages": [
+                                "populations/introduction",
+                                "populations/create-population",
+                                "populations/seed-data-requirements",
+                                "populations/evaluation"
+                            ],
+                            "icon": "globe"
+                        },
+                        {
+                            "group": "Answers",
+                            "pages": [
+                                "answers/introduction",
+                                "answers/simulate-answer",
+                                "answers/benchmark-answer"
+                            ],
+                            "icon": "message-question"
+                        }
                     ],
-                    "icon": "globe"
+                    "icon": "book"
                 },
                 {
-                    "group": "Answers",
+                    "group": "Examples",
                     "pages": [
-                        "answers/introduction",
-                        "answers/simulate-answer",
-                        "answers/benchmark-answer"
+                        "examples/copy-testing"
                     ],
-                    "icon": "message-question"
+                    "icon": "code"
                 }
                 ]
         },
