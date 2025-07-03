@@ -9,14 +9,12 @@ Populations are the core of Semilattice's prediction engine. When you make API c
 
 ## What is a Population?
 
-A Population is a trained model that represents a specific group of people. When you call the API with a `population_id`, you're telling Semilattice which group to simulate. Each population has unique characteristics that affect prediction accuracy and scope.
+A Population is a model that represents a specific group of people. When you call the API with a `population_id`, you're telling Semilattice which group to simulate. Each population has unique characteristics that affect prediction accuracy and scope.
 
 ### Target Population
 
-Each population targets a specific demographic or psychographic group. For example:
-- `dev-population-uuid` might target software developers
-- `marketing-exec-uuid` might target marketing executives
-- `us-adults-uuid` might target general US adults
+Each population targets a specific user profile. For example:
+`dev-population-uuid` might target software developers, `marketing-exec-uuid` might target marketing executives, and `us-adults-uuid` might target general US adults.
 
 When choosing a `population_id` for your API calls, select the one that best matches your target audience.
 
@@ -24,19 +22,19 @@ When choosing a `population_id` for your API calls, select the one that best mat
   <img src="/images/populations/introduction/target_population.png" />
 </Frame>
 
-Populations range from broad demographic groups to highly specific niches. The more specific the population, the more accurate predictions will be for that specific group, but the narrower the scope of applicable questions.
+Populations range from broad user profiles to highly specific niches. The more specific the population, the more accurate predictions will be for that specific group, but the narrower the scope of applicable questions.
 
-### Training Data
-Populations are trained on real survey data from their target demographic. This training data determines:
+### Seed Data
+Populations are built using real survey data from their target user profile. This seed data determines:
 - **Prediction accuracy**: How well the model predicts for similar questions
 - **Subject expertise**: What topics the population can predict accurately
 - **Response patterns**: How the group typically answers questions
 
-<Frame caption="Training data determines population behavior">
+<Frame caption="Seed data determines population behavior">
   <img src="/images/populations/introduction/seed_data.png" />
 </Frame>
 
-Learn more about how populations are trained in the [seed data](/populations/seed-data) section.
+Learn more about how populations are created in the [seed data](/populations/seed-data) section.
 
 ### Accuracy Metrics
 
@@ -73,7 +71,7 @@ When making API calls, you can access:
 <AccordionGroup>
   <Accordion title="Public populations">
     - Can be used by any authenticated API user
-    - Ideal for common demographics ("US Adults", "Software Developers")
+    - Ideal for common user profiles ("US Adults", "Software Developers")
     - UUIDs can be shared in documentation and examples
   </Accordion>
 
@@ -98,6 +96,6 @@ To use a population in your API calls, you need its UUID. You can find populatio
 ```python
 # Example: List available populations
 populations = semilattice.populations.list()
-for pop in populations['data']:
-    print(f"{pop['name']}: {pop['id']}")
+for pop in populations.data:
+    print(f"{pop.name}: {pop.id}")
 ```

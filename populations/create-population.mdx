@@ -1,6 +1,6 @@
 ---
 title: "Create a Population"
-description: "Create custom populations from your survey data"
+description: "Create custom populations from arbitrary user data"
 ---
 
 Custom populations allow you to make predictions for your specific audience segments, customers, or user groups. This guide shows how to create populations programmatically using the Semilattice API.
@@ -8,7 +8,7 @@ Custom populations allow you to make predictions for your specific audience segm
 ## Prerequisites
 
 Before creating a population, ensure you have:
-- Survey data in the [required CSV format](/populations/seed-data-requirements)
+- QA pair data from a target group of users or customers in the [required CSV format](/populations/seed-data-requirements)
 - A valid Semilattice API key
 - The Semilattice SDK installed
 
@@ -56,34 +56,62 @@ const population = await semilattice.populations.create({
 |-----------|------|-------------|
 | `name` | string | Display name for your population |
 | `description` | string | Detailed description or documentation link |
-| `seed_data` | file/path | CSV file containing survey responses |
-| `reality_target` | string | Description of the target demographic |
+| `seed_data` | file/path | CSV file containing QA pair data |
+| `reality_target` | string | Description of the target user profile |
 | `simulation_engine` | string | Engine version (typically "answers-1") |
-| `simulation_options` | object | Additional configuration options |
+| `simulation_options` | object | Question type configuration for proper simulation (see below) |
 | `run_test` | boolean | Whether to automatically test accuracy after creation |
+
+### Simulation Options
+
+The `simulation_options` parameter configures how questions are interpreted during simulation:
+
+```python
+simulation_options = {
+    "question_options": [
+        {
+            "question_number": 1,  # Optional: 1-based index
+            "question_type": "single-choice",  # or "multiple-choice", "open-ended"
+            "limit": 3  # Optional: max choices for multiple-choice
+        },
+        {
+            "question_number": 2,
+            "question_type": "multiple-choice",
+            "limit": 2
+        }
+    ]
+}
+```
+
+**Question Types:**
+- `single-choice`: Single-select questions (radio buttons)
+- `multiple-choice`: Multi-select questions (checkboxes), optionally with limits
+- `open-ended`: Free-text responses
+
+This configuration ensures test simulations run correctly when evaluating population accuracy.
 
 ## Population Status Flow
 
 When you create a population, it goes through several status stages:
 
-### 1. Processing
-Initially, your population will have a `status` of **"Processing"** while Semilattice trains the model on your data.
+### 1. `Processing`
+Initially, your population will have a status of `Processing` while Semilattice processes and stores your data.
 
 ```python
-print(f"Population status: {population['data']['status']}")
+print(f"Population status: {population.data.status}")
 # Output: Population status: Processing
 ```
 
-### 2. Untested
-Once processing completes, the status changes to **"Untested"**. At this point:
+### 2. `Untested`
+Once processing completes, the status changes to `Untested`. At this point:
 - The population is ready to make predictions
 - We don't yet know its estimated accuracy
 - You can start using it for predictions, but reliability is unknown
 
 ```python
 # Check status periodically
-updated_population = semilattice.populations.get(population['data']['id'])
-print(f"Status: {updated_population['data']['status']}")
+updated_population = semilattice.populations.get(population.data.id)
+print(f"Status: {updated_population.data.status}")
 # Output: Status: Untested
 ```
 
@@ -122,17 +150,17 @@ const population = await semilattice.populations.create({
 </CodeGroup>
 
 With automatic testing, your population will progress through these statuses:
-**Processing** → **Untested** → **Testing** → **Tested**
+`Processing` → `Untested` → `Testing` → `Tested`
 
 ### Option 2: Manual Testing
 
-Alternatively, you can trigger testing manually on an "Untested" population:
+Alternatively, you can trigger testing manually on an `Untested` population:
 
 <CodeGroup>
 ```python Python
 # Trigger testing manually
 test_result = semilattice.populations.test(
-    population_id=population['data']['id']
+    population_id=population.data.id
 )
 ```
 
@@ -147,7 +175,7 @@ const testResult = await semilattice.populations.test({
 ## Understanding Test Results
 
 Once testing is complete, your population will have:
-- **Status**: "Tested"
+- **Status**: `Tested`
 - **Accuracy metrics**: Estimated performance scores
 - **Confidence levels**: Reliability indicators for predictions
 
@@ -155,7 +183,7 @@ Learn more about interpreting these metrics in the [Evaluation](/populations/eva
 
 ## Next Steps
 
-1. **Wait for processing**: Monitor the population status until it's "Untested" or "Tested"
+1. **Wait for processing**: Monitor the population status until it's `Untested` or `Tested`
 2. **Review accuracy**: Check the evaluation metrics to understand prediction reliability
 3. **Start predicting**: Use the population ID in your prediction API calls
 4. **Iterate**: Create new populations with different data to improve accuracy

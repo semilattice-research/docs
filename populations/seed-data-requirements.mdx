@@ -8,7 +8,7 @@ This page outlines the technical requirements and best practices for preparing C
 
 ## Overview
 
-Your CSV file should contain survey responses where each row represents one respondent and each column represents their answer to a multiple-choice question. This data trains your population model to make accurate predictions for similar groups.
+Your CSV file should contain QA pair data where each row represents one respondent and each column represents their answer to a multiple-choice question. This data creates your population model to make accurate predictions for similar groups.
 
 ### CSV Format Requirements
 
@@ -75,17 +75,17 @@ These considerations are useful to bear in mind.
     </Accordion>
 </AccordionGroup>
 
-## How Population Training Works
+## How Population Creation Works
 
-Your CSV data trains the population model, but predictions also leverage Semilattice's underlying AI. The training data acts as a "filter" that selects relevant knowledge from the AI model.
+Your CSV data creates the population model, but predictions also leverage Semilattice's underlying AI. The seed data acts as a "filter" that selects relevant knowledge from the AI model.
 
 This means your questions should have **predictive power** - they should reveal information that correlates with how your target group would answer new questions.
 
-## Choosing Training Questions
+## Choosing Seed Questions
 
-The questions in your training data determine prediction accuracy. Better training questions lead to more accurate API responses.
+The questions in your seed data determine prediction accuracy. Better seed questions lead to more accurate API responses.
 
-### What makes a good training question?
+### What makes a good seed question?
 
 Think about how informative each answer would be:
 - **High predictive power**: Age, profession, education level, core values
@@ -107,13 +107,13 @@ These questions would help predict developer attitudes toward new frameworks, to
 
 <CardGroup cols={1}>
   <Card title="Target your API use case" icon="target">
-    Choose training questions that relate to the types of predictions you'll make via API. Building a customer feedback population? Include questions about satisfaction, preferences, and demographics.
+    Choose seed questions that relate to the types of predictions you'll make via API. Building a customer feedback population? Include questions about satisfaction, preferences, and user profiles.
   </Card>
   <Card title="Avoid redundant questions" icon="arrows-cross">
     Don't include multiple questions that reveal the same information. "Preferred condiment" and "Favorite fries topping" are too similar.
   </Card>
   <Card title="Maximize data quality" icon="chart-line">
-    Aim for 20 questions and 1,000+ responses. More training data typically means better API prediction accuracy.
+    Aim for 20 questions and 1,000+ responses. More seed data typically means better API prediction accuracy.
   </Card>
   <Card title="Test with real questions" icon="flask">
     After creating your population, test it with questions similar to your API use case to validate accuracy.

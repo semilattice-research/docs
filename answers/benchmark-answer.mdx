@@ -11,7 +11,7 @@ Benchmarking helps you:
 - **Validate population accuracy** for questions similar to your use case
 - **Compare different populations** to choose the best one for your needs  
 - **Build confidence** in predictions before making important decisions
-- **Identify weaknesses** in population training data
+- **Identify weaknesses** in population seed data
 
 ## Basic Usage
 
@@ -186,19 +186,19 @@ Like simulations, benchmarks run asynchronously:
 ```python Python
 import time
 
-answer_id = result['data'][0]['id']
+answer_id = result.data[0].id
 
 while True:
     answer = semilattice.answers.get(answer_id)
     
-    if answer['data']['status'] == 'Predicted':
+    if answer.data.status == 'Predicted':
         print("Benchmark complete!")
         break
-    elif answer['data']['status'] == 'Failed':
+    elif answer.data.status == 'Failed':
         print("Benchmark failed")
         break
     
-    print(f"Status: {answer['data']['status']}")
+    print(f"Status: {answer.data.status}")
     time.sleep(5)
 ```
 
@@ -273,8 +273,8 @@ Compare predicted vs actual percentages:
 
 ```python
 def analyze_benchmark_result(result):
-    predicted = result['data']['simulated_answer_percentages']
-    actual = result['data']['ground_answer_percentages']
+    predicted = result.data.simulated_answer_percentages
+    actual = result.data.ground_answer_percentages
     
     print("Prediction vs Reality:")
     for option in predicted:
@@ -289,13 +289,13 @@ def analyze_benchmark_result(result):
 ### Data Quality
 <CardGroup cols={2}>
   <Card title="Representative samples" icon="users">
-    Ensure your ground truth data comes from the same demographic as your target population.
+    Ensure your ground truth data comes from the same user profile as your target population.
   </Card>
   <Card title="Sufficient sample size" icon="chart-bar">
     Use at least 25-50 responses for reliable benchmarking results.
   </Card>
   <Card title="Recent data" icon="clock">
-    Use recent survey data that reflects current attitudes and preferences.
+    Use recent data that reflects current attitudes and preferences.
   </Card>
   <Card title="Clear questions" icon="message">
     Test with questions that are unambiguous and have distinct answer options.
@@ -303,14 +303,14 @@ def analyze_benchmark_result(result):
 </CardGroup>
 
 ### Testing Strategy
-1. **Start with known questions**: Use questions from your population's training data to establish baseline accuracy
-2. **Test similar questions**: Benchmark with questions related to but not identical to training data
-3. **Test edge cases**: Try questions on topics not covered in training to understand limitations
+1. **Start with known questions**: Use questions from your population's seed data to establish baseline accuracy
+2. **Test similar questions**: Benchmark with questions related to but not identical to seed data
+3. **Test edge cases**: Try questions on topics not covered in seed data to understand limitations
 4. **Compare populations**: Benchmark the same questions across different populations to choose the best one
 
 ## Next Steps
 
 - **Evaluate results**: Use the accuracy metrics to determine if your population is suitable for your use case
-- **Improve populations**: If accuracy is low, consider creating populations with better [training data](/populations/seed-data-requirements)
+- **Improve populations**: If accuracy is low, consider creating populations with better [seed data](/populations/seed-data-requirements)
 - **Scale testing**: Integrate benchmarking into your population validation workflow
 - **Start predicting**: Once validated, use [answer simulation](/answers/simulate-answer) for new questions

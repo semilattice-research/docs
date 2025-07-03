@@ -9,10 +9,10 @@ Population evaluation measures how accurately your custom population can predict
 
 ## Why Test Populations?
 
-When you create a population, you get a model trained on your specific data. But without testing, you don't know:
+When you create a population, you get a model built on your specific data. But without testing, you don't know:
 - How accurate predictions will be for new questions
 - Which types of questions the population handles well
-- Whether your training data was sufficient
+- Whether your seed data was sufficient
 
 Population testing answers these questions by measuring performance against held-out data.
 
@@ -101,10 +101,10 @@ Once testing is complete, metrics are available in API responses:
 # Get population with evaluation metrics
 population = semilattice.populations.get(population_id)
 
-print(f"Accuracy: {population['data']['accuracy']}%")
-print(f"RMSE: {population['data']['root_mean_squared_error']}%")
-print(f"Normalized Information Loss: {population['data']['normalised_kullback_leibler_divergence']}")
-print(f"Information Loss: {population['data']['kullback_leibler_divergence']}")
+print(f"Accuracy: {population.data.accuracy}%")
+print(f"RMSE: {population.data.root_mean_squared_error}%")
+print(f"Normalized Information Loss: {population.data.normalised_kullback_leibler_divergence}")
+print(f"Information Loss: {population.data.kullback_leibler_divergence}")
 ```
 
 ```javascript Node.js
@@ -123,9 +123,9 @@ console.log(`Information Loss: ${population.data.kullback_leibler_divergence}`);
 ### Decision Framework
 ```python
 def should_use_population(population_metrics):
-    accuracy = population_metrics['accuracy']
-    rmse = population_metrics['root_mean_squared_error']
-    nkld = population_metrics['normalised_kullback_leibler_divergence']
+    accuracy = population_metrics.accuracy
+    rmse = population_metrics.root_mean_squared_error
+    nkld = population_metrics.normalised_kullback_leibler_divergence
     
     if accuracy > 85 and rmse < 18 and nkld < 0.1:
         return "high_confidence"
@@ -138,13 +138,13 @@ def should_use_population(population_metrics):
 ### Confidence Levels
 - **High confidence**: Meets all "good" thresholds - suitable for critical business decisions
 - **Medium confidence**: Decent performance - good for research and general insights
-- **Low confidence**: Below recommended thresholds - consider improving training data or methodology
+- **Low confidence**: Below recommended thresholds - consider improving seed data or methodology
 
 ## Improving Population Accuracy
 
 If your evaluation metrics are poor, try:
 
-### 1. More Training Data
+### 1. More Seed Data
 - **Increase respondents**: More survey responses usually improve accuracy
 - **Add questions**: 15-20 questions typically work better than 5-10
 
@@ -165,8 +165,8 @@ If your evaluation metrics are poor, try:
 </Frame>
 
 Some important notes:
-- **Subject expertise**: Populations predict better for topics covered in training data
-- **Question similarity**: Predictions are more accurate for questions similar to training questions
+- **Subject expertise**: Populations predict better for topics covered in seed data
+- **Question similarity**: Predictions are more accurate for questions similar to seed questions
 - **Complexity**: Simple preference questions often predict better than complex reasoning questions
 
 ## Next Steps
@@ -174,6 +174,6 @@ Some important notes:
 1. **Review your metrics** to understand population reliability
 2. **Test with similar questions** to validate performance for your use case
 3. **Set confidence thresholds** based on your risk tolerance
-4. **Iterate on training data** if accuracy is insufficient
+4. **Iterate on seed data** if accuracy is insufficient
 
-For guidance on improving your training data, see [Seed Data Requirements](/populations/seed-data-requirements).
+For guidance on improving your seed data, see [Seed Data Requirements](/populations/seed-data-requirements).

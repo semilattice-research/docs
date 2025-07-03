@@ -3,11 +3,11 @@ title: "Introduction"
 description: "Get started with Semilattice's API for population predictions"
 ---
 
-Semilattice is a computational research platform that predicts how specific populations would answer questions. Our API lets you simulate responses from any demographic group, from software developers to marketing executives to general consumers.
+Semilattice is a computational research platform that predicts how specific populations would answer questions. Our API lets you simulate responses from any user profile, from software developers to marketing executives to general consumers.
 
 ## How it works
 
-1. **Choose a population** - Select from public populations or create custom ones from your survey data
+1. **Choose a population** - Select from public populations or create custom ones from your user data
 2. **Ask questions** - Submit single-choice, multiple-choice, or open-ended questions  
 3. **Get predictions** - Receive percentage distributions showing how the population would respond
 4. **Validate accuracy** - Test populations against known data to understand reliability
@@ -18,18 +18,10 @@ Choose your preferred language to get started:
 
 <CardGroup cols={2}>
   <Card title="Python" icon="python" href="/python-quickstart">
-    Get started with our Python SDK. Install from PyPI and start predicting in minutes.
-    
-    ```bash
-    pip install semilattice
-    ```
+    Get started with our Python SDK and start predicting in minutes.
   </Card>
   <Card title="Node.js" icon="node-js" href="/nodejs-quickstart">
-    Get started with our Node.js SDK. Install from npm and integrate with your JavaScript applications.
-    
-    ```bash
-    npm install semilattice
-    ```
+    Get started with our Node.js SDK and integrate with your JavaScript applications.
   </Card>
 </CardGroup>
 
@@ -37,7 +29,7 @@ Choose your preferred language to get started:
 
 <CardGroup cols={2}>
   <Card title="Populations" icon="globe" href="/populations/introduction">
-    Population models represent specific demographic groups. Learn how to choose the right population for your use case.
+    Population models represent specific user profiles. Learn how to choose the right population for your use case.
   </Card>
   <Card title="Answers" icon="message-question" href="/answers/introduction">
     Answer predictions show how populations respond to questions. Understand simulation vs benchmarking.
@@ -47,45 +39,26 @@ Choose your preferred language to get started:
 ## Example Use Cases
 
 <AccordionGroup>
-  <Accordion title="Product Research">
-    Predict how your target customers would respond to new product features, pricing strategies, or design choices before investing in development.
+  <Accordion title="AI Agent Decision Making">
+    Enable AI agents to predict user responses for automated A/B testing, personalization, or content optimization decisions.
   </Accordion>
   
-  <Accordion title="Market Validation">
-    Test product-market fit by simulating how different demographic segments would react to your value proposition or marketing messages.
+  <Accordion title="Programmatic User Research">
+    Automate user research workflows by simulating responses from specific user profiles at scale.
   </Accordion>
   
-  <Accordion title="User Experience">
-    Understand user preferences for interface designs, feature priorities, or workflow optimizations across different user groups.
+  <Accordion title="Dynamic Content Systems">
+    Build systems that automatically select messaging, features, or experiences based on predicted user profile responses.
   </Accordion>
   
-  <Accordion title="Content Strategy">
-    Predict which messaging, content formats, or communication styles will resonate with specific audience segments.
+  <Accordion title="Algorithmic Product Development">
+    Integrate user response predictions into product development pipelines for data-driven feature prioritization.
   </Accordion>
   
-  <Accordion title="Audience Analysis">
-    Gain insights into any demographic group's attitudes, preferences, and decision-making patterns for strategic planning.
+  <Accordion title="Automated Market Intelligence">
+    Create systems that continuously monitor and predict market responses to inform strategic decisions.
   </Accordion>
 </AccordionGroup>
-
-## API Overview
-
-Our RESTful API provides endpoints for:
-
-- **Population management**: Create, list, and test population models
-- **Answer simulation**: Predict responses to new questions  
-- **Benchmarking**: Validate population accuracy against known data
-- **Result polling**: Monitor async prediction jobs
-
-All endpoints support both single requests and batch operations for efficiency.
-
-## Next Steps
-
-1. **Get your API key** - [Sign up](https://semilattice.ai/sign-up) for a Semilattice account
-2. **Choose your SDK** - Install our Python or Node.js SDK
-3. **Run your first prediction** - Follow our quickstart guide
-4. **Explore populations** - Browse available demographic models
-5. **Validate accuracy** - Test populations with benchmark questions
 
 <CardGroup cols={1}>
   <Card title="API Reference" icon="code" href="/api-reference">

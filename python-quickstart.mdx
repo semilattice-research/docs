@@ -75,20 +75,20 @@ Poll for the result using the answer ID:
 ```python
 import time
 
-answer_id = result['data'][0]['id']
+answer_id = result.data[0].id
 
 while True:
     answer = semilattice.answers.get(answer_id)
     
-    if answer['data']['status'] == 'Predicted':
+    if answer.data.status == 'Predicted':
         print("Simulation complete!")
-        print(f"Results: {answer['data']['simulated_answer_percentages']}")
+        print(f"Results: {answer.data.simulated_answer_percentages}")
         break
-    elif answer['data']['status'] == 'Failed':
+    elif answer.data.status == 'Failed':
         print("Simulation failed")
         break
     
-    print(f"Status: {answer['data']['status']}")
+    print(f"Status: {answer.data.status}")
     time.sleep(5)  # Wait 5 seconds before checking again
 ```
 
