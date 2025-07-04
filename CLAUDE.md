@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Mintlify documentation site for Semilattice, a computational research platform that predicts how specific populations of people would answer questions. The documentation is built using Mintlify's documentation framework and focuses on API integration for developers.
+This is a Mintlify documentation site for Semilattice, a user simulation API that predicts how specific user profiles would answer questions. The documentation is built using Mintlify's documentation framework and focuses on API integration for developers.
 
 ## Architecture
 
