@@ -58,7 +58,7 @@
         },
         {
             "tab": "API Reference",
-            "openapi": "https://api.semilattice.ai/openapi.json"
+            "openapi": "https://alexander-api.semilattice.ai/openapi.json"
         }
     ]
   },
