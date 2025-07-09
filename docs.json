@@ -46,13 +46,6 @@
                         }
                     ],
                     "icon": "book"
-                },
-                {
-                    "group": "Examples",
-                    "pages": [
-                        "examples/copy-testing"
-                    ],
-                    "icon": "code"
                 }
                 ]
         },
