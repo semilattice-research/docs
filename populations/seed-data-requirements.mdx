@@ -1,7 +1,12 @@
 ---
-title: 'Seed Data Requirements'
+title: 'Seed data requirements'
 description: "CSV format and data quality requirements for population creation"
 ---
+
+<Note>
+  Population model creation is a paid feature on the **Play** and **Launch** pricing plans. Visit the [account page](https://semilattice.ai/account) in the dashboard to upgrade.
+</Note>
+
 ![Seed Data](/images/populations/seed_data/hero.png)
 
 This page outlines the technical requirements and best practices for preparing CSV data to create custom populations. Your data quality directly impacts prediction accuracy, so following these guidelines is essential.
@@ -10,7 +15,7 @@ This page outlines the technical requirements and best practices for preparing C
 
 Your CSV file should contain QA pair data where each row represents one respondent and each column represents their answer to a multiple-choice question. This data creates your population model to make accurate predictions for similar groups.
 
-### CSV Format Requirements
+### CSV format requirements
 
 Your CSV file must meet these technical specifications:
 
@@ -31,12 +36,12 @@ sim_id,"What's your primary role?","How many years of experience?","Preferred de
 3,"Data Scientist","5+ years","Jupyter"
 ```
 
-### Data Quality Guidelines
+### Data quality guidelines
 
 While the API accepts any CSV meeting technical requirements, following these guidelines ensures better population accuracy:
 <AccordionGroup>
     <Accordion title="Headers should be clear questions">
-        Column headers become the question text in API responses. Use complete questions: "What is your favorite color?" rather than just "Color".
+        Column headers become the question text in API responses. Use complete questions: "What is your favourite colour?" rather than just "Colour".
     </Accordion>
     <Accordion title="Each question should be self-contained">
         Questions can't reference other questions. Avoid "How strongly do you feel about your previous answer?" Instead, make each question standalone: "How important is work-life balance to you?"
@@ -75,13 +80,13 @@ These considerations are useful to bear in mind.
     </Accordion>
 </AccordionGroup>
 
-## How Population Creation Works
+## How population creation works
 
 Your CSV data creates the population model, but predictions also leverage Semilattice's underlying AI. The seed data acts as a "filter" that selects relevant knowledge from the AI model.
 
 This means your questions should have **predictive power** - they should reveal information that correlates with how your target group would answer new questions.
 
-## Choosing Seed Questions
+## Choosing seed questions
 
 The questions in your seed data determine prediction accuracy. Better seed questions lead to more accurate API responses.
 
@@ -89,10 +94,24 @@ The questions in your seed data determine prediction accuracy. Better seed quest
 
 Think about how informative each answer would be:
 - **High predictive power**: Age, profession, education level, core values
-- **Low predictive power**: Favorite color, random preferences unrelated to your use case
+- **Low predictive power**: Favourite colour, random preferences unrelated to your use case
 - **Context-dependent**: Food preferences matter for restaurant surveys but not for software feedback
 
-### Example: Developer Population
+### Understanding predictive power
+
+A population's accuracy when predicting the answer to a new question is dependent on the predictive power of the questions and answers in its seed data. This predictive power varies depending on the question being predicted and is a function of how those seed data work with the simulation engine.
+
+**Predictive power cannot be predicted**
+
+Due to the black box nature of the LLMs used by Semilattice, it's not yet possible to tell which seed data have more predictive power with certainty.
+
+**Building intuition around predictive power**
+
+An intuitive way of estimating the predictive power of a question is to think about how informative someone's answer to that question would be. For example, knowing someone's age tells you a lot more about them than knowing whether they prefer ketchup or mayonnaise. However, it's also important to consider the purpose of the population you are building. If you work in R&D at Heinz, the latter question will have more predictive power for the questions you plan to predict.
+
+Predictive power is an area of research for Semilattice. If you want to go deeper, it maps broadly to the concept of feature selection in machine learning & data mining.
+
+### Example: Developer population
 
 ```csv
 sim_id,"Years of experience?","Primary language?","Team size?","Remote work preference?"
@@ -103,10 +122,10 @@ sim_id,"Years of experience?","Primary language?","Team size?","Remote work pref
 These questions would help predict developer attitudes toward new frameworks, tools, or methodologies.
 
 
-## Best Practices for API-Ready Populations
+## Best practices for API-ready populations
 
 <CardGroup cols={1}>
-  <Card title="Target your API use case" icon="target">
+  <Card title="Target your API use case" icon="bullseye">
     Choose seed questions that relate to the types of predictions you'll make via API. Building a customer feedback population? Include questions about satisfaction, preferences, and user profiles.
   </Card>
   <Card title="Avoid redundant questions" icon="arrows-cross">
@@ -119,14 +138,3 @@ These questions would help predict developer attitudes toward new frameworks, to
     After creating your population, test it with questions similar to your API use case to validate accuracy.
   </Card>
 </CardGroup>
-
-## Next Steps
-
-Once your CSV data meets these requirements:
-
-1. **Use the create population API** as shown in [Create a Population](/populations/create-population)
-2. **Monitor processing status** until your population is ready
-3. **Run accuracy tests** to understand prediction reliability
-4. **Start making predictions** using your population ID
-
-For the complete workflow, see [Create a Population](/populations/create-population).

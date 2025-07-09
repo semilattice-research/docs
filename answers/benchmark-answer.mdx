@@ -5,7 +5,7 @@ description: "Test population accuracy against known data"
 
 Benchmarking tests your population's accuracy by comparing its predictions to questions with known real-world answers. This is essential for validating population quality and understanding prediction reliability.
 
-## Why Benchmark?
+## Why benchmark?
 
 Benchmarking helps you:
 - **Validate population accuracy** for questions similar to your use case
@@ -13,7 +13,7 @@ Benchmarking helps you:
 - **Build confidence** in predictions before making important decisions
 - **Identify weaknesses** in population seed data
 
-## Basic Usage
+## Basic usage
 
 <CodeGroup>
 ```python Python
@@ -61,9 +61,9 @@ const result = await semilattice.answers.benchmark({
 ```
 </CodeGroup>
 
-## Required Parameters
+## Required parameters
 
-### Ground Truth Data
+### Ground truth data
 For benchmarking, you must provide the real-world answer distribution:
 
 #### `ground_answer_counts`
@@ -93,14 +93,14 @@ The total number of people who responded to the question. This is crucial for mu
 - Total selections across all options: 180
 - `ground_answer_sample_size: 100` (the number of people, not total selections)
 
-## Question Types
+## Question types
 
-### Single-Choice Benchmarking
+### Single-choice Benchmarking
 
 <CodeGroup>
 ```python Python
 result = semilattice.answers.benchmark(
-    population_id="your-population-id",
+    population_id="population-id",
     answers={
         "question": "What's your experience level?",
         "question_options": {"question_type": "single-choice"},
@@ -118,7 +118,7 @@ result = semilattice.answers.benchmark(
 
 ```javascript Node.js
 const result = await semilattice.answers.benchmark({
-    population_id: "your-population-id",
+    population_id: "population-id",
     answers: {
         question: "What's your experience level?",
         question_options: { question_type: "single-choice" },
@@ -135,12 +135,12 @@ const result = await semilattice.answers.benchmark({
 ```
 </CodeGroup>
 
-### Multiple-Choice Benchmarking
+### Multiple-choice Benchmarking
 
 <CodeGroup>
 ```python Python
 result = semilattice.answers.benchmark(
-    population_id="your-population-id",
+    population_id="population-id",
     answers={
         "question": "Which tools do you use? (Select all that apply)",
         "question_options": {"question_type": "multiple-choice"},
@@ -158,7 +158,7 @@ result = semilattice.answers.benchmark(
 
 ```javascript Node.js
 const result = await semilattice.answers.benchmark({
-    population_id: "your-population-id",
+    population_id: "population-id",
     answers: {
         question: "Which tools do you use? (Select all that apply)",
         question_options: { question_type: "multiple-choice" },
@@ -175,10 +175,10 @@ const result = await semilattice.answers.benchmark({
 ```
 </CodeGroup>
 
-### Open-Ended Questions
+### Open-ended Questions
 <Note>Benchmarking is not currently supported for open-ended questions as they are still in alpha.</Note>
 
-## Handling Async Results
+## Handling async results
 
 Like simulations, benchmarks run asynchronously:
 
@@ -188,41 +188,24 @@ import time
 
 answer_id = result.data[0].id
 
-while True:
-    answer = semilattice.answers.get(answer_id)
-    
-    if answer.data.status == 'Predicted':
-        print("Benchmark complete!")
-        break
-    elif answer.data.status == 'Failed':
-        print("Benchmark failed")
-        break
-    
-    print(f"Status: {answer.data.status}")
-    time.sleep(5)
+while result.data[0].status != "Predicted":
+    time.sleep(1)
+    result = semilattice.answers.get(answer_id)
+
+print("Benchmark complete!")
 ```
 
 ```javascript Node.js
-const answerId = result.data[0].id;
-
-while (true) {
-    const answer = await semilattice.answers.get(answerId);
-    
-    if (answer.data.status === 'Predicted') {
-        console.log("Benchmark complete!");
-        break;
-    } else if (answer.data.status === 'Failed') {
-        console.log("Benchmark failed");
-        break;
-    }
-    
-    console.log(`Status: ${answer.data.status}`);
-    await new Promise(resolve => setTimeout(resolve, 5000));
+while (result.data[0].status !== "Predicted") {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    result = await semilattice.answers.get(result.data[0].id);
 }
+
+console.log("Benchmark complete!");
 ```
 </CodeGroup>
 
-## Understanding Benchmark Results
+## Understanding benchmark results
 
 Once complete, benchmark results include both predictions and accuracy metrics:
 
@@ -259,34 +242,38 @@ Once complete, benchmark results include both predictions and accuracy metrics:
 }
 ```
 
-## Interpreting Accuracy Metrics
+## Interpreting accuracy metrics
 
-### Question-Level Accuracy
+### Question-level accuracy
 Unlike [population-level metrics](/populations/evaluation), benchmark results give you accuracy for this specific question:
 
-- **Accuracy**: 87.5% - Predictions were within ~12.5% of actual results on average
-- **RMSE**: 14.2% - Root mean squared error shows prediction variance
-- **Normalized KL Divergence**: 0.08 - Good score (below 0.1 threshold)
+### Mean absolute error
+- **Field**: `accuracy` (displayed as 1 - MAE)
+- **Range**: 0 to 100% (higher is better)
+- **Meaning**: Overall prediction accuracy as a percentage for this specific question
+- **Example**: 87.5% accuracy means predictions were within ~12.5% of actual results on average
 
-### Comparison Analysis
-Compare predicted vs actual percentages:
+### Root mean squared error  
+- **Field**: `root_mean_squared_error`
+- **Range**: 0 to 100% (lower is better)
+- **Meaning**: Penalises large prediction errors more heavily than small ones for this question
+- **Use case**: Shows prediction variance - higher values indicate less consistent predictions
 
-```python
-def analyze_benchmark_result(result):
-    predicted = result.data.simulated_answer_percentages
-    actual = result.data.ground_answer_percentages
-    
-    print("Prediction vs Reality:")
-    for option in predicted:
-        pred_pct = predicted[option] * 100
-        actual_pct = actual[option] * 100
-        diff = abs(pred_pct - actual_pct)
-        print(f"{option}: {pred_pct:.1f}% predicted vs {actual_pct:.1f}% actual (diff: {diff:.1f}%)")
-```
+### Normalised Kullback-Leibler divergence
+- **Field**: `normalised_kullback_leibler_divergence`
+- **Range**: 0 to 1+ (lower is better)
+- **Meaning**: Measures how different the predicted distribution is from reality, normalised by number of answer options
+- **Use case**: Best overall measure of prediction quality for this question - values below 0.1 are considered good
 
-## Best Practices
+### Kullback-Leibler divergence
+- **Field**: `kullback_leibler_divergence`
+- **Range**: Varies by question (lower is better)
+- **Meaning**: Raw divergence measure without normalisation
+- **Use case**: Question-specific analysis - not comparable between questions with different numbers of options
 
-### Data Quality
+## Best practices
+
+### Data quality
 <CardGroup cols={2}>
   <Card title="Representative samples" icon="users">
     Ensure your ground truth data comes from the same user profile as your target population.
@@ -294,23 +281,4 @@ def analyze_benchmark_result(result):
   <Card title="Sufficient sample size" icon="chart-bar">
     Use at least 25-50 responses for reliable benchmarking results.
   </Card>
-  <Card title="Recent data" icon="clock">
-    Use recent data that reflects current attitudes and preferences.
-  </Card>
-  <Card title="Clear questions" icon="message">
-    Test with questions that are unambiguous and have distinct answer options.
-  </Card>
 </CardGroup>
-
-### Testing Strategy
-1. **Start with known questions**: Use questions from your population's seed data to establish baseline accuracy
-2. **Test similar questions**: Benchmark with questions related to but not identical to seed data
-3. **Test edge cases**: Try questions on topics not covered in seed data to understand limitations
-4. **Compare populations**: Benchmark the same questions across different populations to choose the best one
-
-## Next Steps
-
-- **Evaluate results**: Use the accuracy metrics to determine if your population is suitable for your use case
-- **Improve populations**: If accuracy is low, consider creating populations with better [seed data](/populations/seed-data-requirements)
-- **Scale testing**: Integrate benchmarking into your population validation workflow
-- **Start predicting**: Once validated, use [answer simulation](/answers/simulate-answer) for new questions

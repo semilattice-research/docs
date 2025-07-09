@@ -1,18 +1,23 @@
 ---
-title: "Create a Population"
+title: "Create a population"
 description: "Create custom populations from arbitrary user data"
 ---
+
+<Note>
+  Population model creation is a paid feature on the **Play** and **Launch** pricing plans. Visit the [account page](https://semilattice.ai/account) in the dashboard to upgrade.
+</Note>
 
 Custom populations allow you to make predictions for your specific audience segments, customers, or user groups. This guide shows how to create populations programmatically using the Semilattice API.
 
 ## Prerequisites
 
 Before creating a population, ensure you have:
-- QA pair data from a target group of users or customers in the [required CSV format](/populations/seed-data-requirements)
+- Seed data from a target group of users or customers in the [required CSV format](/populations/seed-data-requirements)
 - A valid Semilattice API key
+- A paid subscription on the **Play** or **Launch** pricing plans
 - The Semilattice SDK installed
 
-## Creating a Population
+## Creating a population
 
 <CodeGroup>
 ```python Python
@@ -21,13 +26,28 @@ from semilattice import Semilattice
 
 semilattice = Semilattice()
 
+# See simulation options section below
+simulation_options = {
+    "question_options": [
+        {
+            "question_number": 1,
+            "question_type": "single-choice"
+        },
+        {
+            "question_number": 2,
+            "question_type": "multiple-choice",
+            "limit": 3
+        }
+    ]
+}
+
 population = semilattice.populations.create(
     name="Developer Survey Q4 2024",
     description="Survey of software developers conducted in Q4 2024",
     seed_data=Path("developer_survey_data.csv"),
     reality_target="Software Developers",
     simulation_engine="answers-1",
-    simulation_options={},
+    simulation_options=simulation_options,  # see below
     run_test=False
 )
 ```
@@ -38,13 +58,28 @@ const fs = require('fs');
 
 const semilattice = new Semilattice();
 
+// See simulation options section below
+const simulationOptions = {
+    question_options: [
+        {
+            question_number: 1,
+            question_type: "single-choice"
+        },
+        {
+            question_number: 2,
+            question_type: "multiple-choice",
+            limit: 3
+        }
+    ]
+};
+
 const population = await semilattice.populations.create({
     name: "Developer Survey Q4 2024",
     description: "Survey of software developers conducted in Q4 2024",
     seed_data: fs.readFileSync("developer_survey_data.csv"),
     reality_target: "Software Developers",
     simulation_engine: "answers-1",
-    simulation_options: {},
+    simulation_options: simulationOptions,  // see below
     run_test: false
 });
 ```
@@ -62,7 +97,7 @@ const population = await semilattice.populations.create({
 | `simulation_options` | object | Question type configuration for proper simulation (see below) |
 | `run_test` | boolean | Whether to automatically test accuracy after creation |
 
-### Simulation Options
+### Simulation options
 
 The `simulation_options` parameter configures how questions are interpreted during simulation:
 
@@ -70,9 +105,8 @@ The `simulation_options` parameter configures how questions are interpreted duri
 simulation_options = {
     "question_options": [
         {
-            "question_number": 1,  # Optional: 1-based index
-            "question_type": "single-choice",  # or "multiple-choice", "open-ended"
-            "limit": 3  # Optional: max choices for multiple-choice
+            "question_number": 1,
+            "question_type": "single-choice"
         },
         {
             "question_number": 2,
@@ -83,14 +117,25 @@ simulation_options = {
 }
 ```
 
-**Question Types:**
-- `single-choice`: Single-select questions (radio buttons)
-- `multiple-choice`: Multi-select questions (checkboxes), optionally with limits
-- `open-ended`: Free-text responses
+**Field Descriptions:**
 
-This configuration ensures test simulations run correctly when evaluating population accuracy.
+- **`question_number`**: A 1-based index reference to the column in the seed data file. For example, if the first question column in your CSV is a single-choice question, you would set `"question_number": 1`.
 
-## Population Status Flow
+- **`question_type`**: An enum describing the data type for that column in the seed data file:
+  - `single-choice`: Column cells contain strings representing individual answers (e.g., "Python", "JavaScript")
+  - `multiple-choice`: Column cells contain valid lists of strings representing sets of answers (e.g., ["Python", "JavaScript", "Go"])
+  - `open-ended`: Column cells contain any string representing free text answers
+
+- **`limit`** (optional): For `multiple-choice` questions only, sets the maximum number of choices a respondent can select during simulation.
+
+**Requirements:**
+- There must be one object for each question column in the seed data file in the "question_options" list field
+- The `question_number` values should correspond to the actual column positions in your CSV file
+- Question types must match the actual data format in your seed data
+
+This configuration ensures test simulations run correctly when evaluating population accuracy. For more details on data format requirements, see the [Seed Data Requirements](/populations/seed-data-requirements) guide.
+
+## Population status flow
 
 When you create a population, it goes through several status stages:
 
@@ -106,7 +151,6 @@ print(f"Population status: {population.data.status}")
 Once processing completes, the status changes to `Untested`. At this point:
 - The population is ready to make predictions
 - We don't yet know its estimated accuracy
-- You can start using it for predictions, but reliability is unknown
 
 ```python
 # Check status periodically
@@ -115,11 +159,17 @@ print(f"Status: {updated_population.data.status}")
 # Output: Status: Untested
 ```
 
-## Testing Population Accuracy
+### 3. `Testing`
+When you trigger accuracy testing, either automatically or manually (see below), the status changes to `Testing` while Semilattice evaluates the population's prediction accuracy.
+
+### 4. `Tested`
+Once testing completes, the status becomes `Tested` and the population will have accuracy metrics available for review.
+
+## Testing population accuracy
 
 To understand how accurate your population will be, you need to run a population test.
 
-### Option 1: Automatic Testing
+### Option 1: Automatic testing
 
 Set `run_test=True` when creating the population:
 
@@ -152,40 +202,32 @@ const population = await semilattice.populations.create({
 With automatic testing, your population will progress through these statuses:
 `Processing` → `Untested` → `Testing` → `Tested`
 
-### Option 2: Manual Testing
+### Option 2: Manual testing
 
 Alternatively, you can trigger testing manually on an `Untested` population:
 
 <CodeGroup>
 ```python Python
 # Trigger testing manually
-test_result = semilattice.populations.test(
+population = semilattice.populations.test(
     population_id=population.data.id
 )
+# population.data.status will be "Testing"
 ```
 
 ```javascript Node.js
 // Trigger testing manually
-const testResult = await semilattice.populations.test({
+const population = await semilattice.populations.test({
     population_id: population.data.id
 });
+// population.data.status will be "Testing"
 ```
 </CodeGroup>
 
-## Understanding Test Results
+## Understanding test results
 
 Once testing is complete, your population will have:
 - **Status**: `Tested`
-- **Accuracy metrics**: Estimated performance scores
-- **Confidence levels**: Reliability indicators for predictions
+- **Accuracy metrics**: Estimated accuracy scores
 
-Learn more about interpreting these metrics in the [Evaluation](/populations/evaluation) section.
-
-## Next Steps
-
-1. **Wait for processing**: Monitor the population status until it's `Untested` or `Tested`
-2. **Review accuracy**: Check the evaluation metrics to understand prediction reliability
-3. **Start predicting**: Use the population ID in your prediction API calls
-4. **Iterate**: Create new populations with different data to improve accuracy
-
-For detailed requirements on preparing your CSV data, see [Seed Data Requirements](/populations/seed-data-requirements).
+Learn more about interpreting these metrics and performance thresholds in the [Accuracy Evaluation](/populations/evaluation) section.

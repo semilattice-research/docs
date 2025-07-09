@@ -1,13 +1,13 @@
 ---
-title: "What are Answers?"
-description: "Understanding Semilattice's answer prediction system"
+title: "What are answers?"
+description: "Understanding Semilattice's answer simulation system"
 ---
 
-Answers are the core output of Semilattice's prediction engine. When you ask a population a question, you get back an Answer object that contains the predicted response distribution for that specific group.
+Answers are the first type of human behaviour the Semilattice API can simulate. Simulating an answer with the API means predicting how a specific population, defined by a [population model](/populations/introduction), would respond to a question.
 
-## Key Concepts
+## Key concepts
 
-### Population-Level Predictions
+### Population-level predictions
 Answers represent how a **population** would respond to questions, not individual people. You'll never see simulated responses from specific individuals - only aggregated percentages showing how the group as a whole would distribute across answer options.
 
 ```json
@@ -22,56 +22,41 @@ Answers represent how a **population** would respond to questions, not individua
 }
 ```
 
-### Answer Management
+### Answer management
 The **Answers** section in your dashboard shows all questions you've simulated across different populations. Each row represents a unique question-population combination, allowing you to track and compare predictions over time.
 
-### Question Types
+### Question types
 The API supports three types of questions:
 
 <CardGroup cols={3}>
   <Card title="Single-Choice" icon="circle-dot">
-    Respondents select exactly one option from a list of choices.
+    Simulates respondents selecting exactly one option from a list of choices.
   </Card>
   <Card title="Multiple-Choice" icon="list-check">
-    Respondents can select multiple options from a list of choices.
+    Simulates respondents selecting multiple options from a list of choices.
   </Card>
   <Card title="Open-Ended" icon="message">
     Respondents provide free-text answers. **Currently in alpha!**
   </Card>
 </CardGroup>
 
-## Two Types of Answer Prediction
+## Two types of answer prediction
 
-### Simulate Answers
+### Simulate answers
 When you want to predict how a population would respond to **new questions**:
 - Use the `answers.simulate()` method
 - Accuracy can only be estimated from the population's test results
-- Perfect for market research, product decisions, and audience insights
+- Enables use cases which rely on knowing things you currently don't know about the population
 
-### Benchmark Answers  
+### Benchmark answers  
 When you want to **test a population** against questions with known answers:
 - Use the `answers.benchmark()` method  
-- Compares predictions to ground truth data
-- Generates accuracy metrics to evaluate population performance
-- Essential for validating population quality
+- Compares predictions to ground truth data, generating accuracy metrics
+- Enables you to test population models on new kinds of questions
 
-## Response Accuracy
+## Question format examples
 
-### Simulated Answers
-For new questions, accuracy depends on:
-- **Population quality**: How well the population was built
-- **Question similarity**: How closely your question matches the seed data
-- **Population evaluation scores**: The metrics from population testing
-
-### Benchmark Answers
-For benchmark questions, you get:
-- **Direct accuracy metrics**: MAE, RMSE, KL Divergence calculated for this specific question
-- **Ground truth comparison**: See exactly how predictions compare to reality
-- **Population validation**: Test whether your population is suitable for your use case
-
-## Question Format Examples
-
-### Single-Choice
+### Single-choice
 ```json
 {
   "question": "What's your primary programming language?",
@@ -80,7 +65,7 @@ For benchmark questions, you get:
 }
 ```
 
-### Multiple-Choice
+### Multiple-choice
 ```json
 {
   "question": "Which development tools do you use regularly?",
@@ -89,7 +74,7 @@ For benchmark questions, you get:
 }
 ```
 
-### Open-Ended
+### Open-ended
 ```json
 {
   "question": "What's the biggest challenge in software development?",
@@ -97,7 +82,7 @@ For benchmark questions, you get:
 }
 ```
 
-## Answer Response Structure
+## Answer response structure
 
 All answer predictions follow a consistent structure, whether simulated or benchmarked:
 
@@ -117,7 +102,7 @@ All answer predictions follow a consistent structure, whether simulated or bench
 }
 ```
 
-## Next Steps
+## Next steps
 
 <CardGroup cols={2}>
   <Card title="Simulate an Answer" icon="crystal-ball" href="/answers/simulate-answer">

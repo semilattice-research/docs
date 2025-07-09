@@ -1,44 +1,40 @@
 ---
-title: "What are Populations?"
-description: "Understanding population models for API integration"
+title: "What are populations?"
+description: "Understand population models"
 ---
 
 ![Population](/images/populations/introduction/hero.png)
 
-Populations are the core of Semilattice's prediction engine. When you make API calls to simulate answers, you're selecting a specific user profile model that represents the group of people you want to predict.
+Populations are the core of primitive of the Semilattice API.
 
-## What is a Population?
+## What is a population?
 
-A Population is a model that represents a specific user profile. When you call the API with a `population_id`, you're telling Semilattice which group to simulate. Each population has unique characteristics that affect prediction accuracy and scope.
+A population is a model that represents a specific group of people in reality. When you call the API with a `population_id`, you're telling Semilattice which group to simulate.
 
-### Target Population
+### Target population
 
-Each population targets a specific user profile. For example:
-`dev-population-uuid` might target software developers, `marketing-exec-uuid` might target marketing executives, and `us-adults-uuid` might target general US adults.
-
-When choosing a `population_id` for your API calls, select the one that best matches your target audience.
+Population models have a `reality_target` metadata field which describes the group of people in reality the model is intended to represent. When choosing a population model, select the one that best matches your target audience or user profile.
 
 <Frame caption="A Population modelling global, professional devops specialists">
   <img src="/images/populations/introduction/target_population.png" />
 </Frame>
 
-Populations range from broad user profiles to highly specific niches. The more specific the population, the more accurate predictions will be for that specific group, but the narrower the scope of applicable questions.
+Populations range from broad user profiles to highly specific niches.
 
-### Seed Data
-Populations are built using real survey data from their target user profile. This seed data determines:
-- **Prediction accuracy**: How well the model predicts for similar questions
+### Seed data
+Populations are built using tabular question answer data (such as survey data) from the target audience. This seed data determines:
+- **Prediction accuracy**: How well the model predicts the target audience
 - **Subject expertise**: What topics the population can predict accurately
-- **Response patterns**: How the group typically answers questions
 
-<Frame caption="Seed data determines population behavior">
+<Frame caption="Seed data define population models">
   <img src="/images/populations/introduction/seed_data.png" />
 </Frame>
 
 Learn more about how populations are created in the [seed data](/populations/seed-data) section.
 
-### Accuracy Metrics
+### Accuracy evaluation
 
-Every population includes accuracy metrics that help you understand prediction reliability:
+Every population model, once tested, has evaluation metrics that help you understand prediction accuracy:
 
 <Frame caption="Accuracy metrics help assess prediction confidence">
   <img src="/images/populations/introduction/evaluation_metrics.png" />
@@ -49,7 +45,9 @@ These metrics appear in API responses and help you:
 - Set appropriate confidence levels for your predictions
 - Understand the reliability of specific results
 
-### Simulation Engine
+Learn more about these metrics and how to interpret them in the [Accuracy Evaluation](/populations/evaluation) guide.
+
+### Simulation engine
 
 Each population uses a specific version of Semilattice's simulation engine. This ensures:
 - **Consistency**: All predictions use the same model version
@@ -60,25 +58,25 @@ Each population uses a specific version of Semilattice's simulation engine. This
   <img src="/images/populations/introduction/simulation_engine.png" />
 </Frame>
 
-The `simulation_engine` field in API responses tells you which version was used.
+The `simulation_engine` field in API responses tells you which engine was used. All public population models use the `answers-1` simulation engine.
 
-### Public vs. Private Populations
+### Public vs. custom populations
 
 When making API calls, you can access:
 - **Public populations**: Available to all users with valid API keys
-- **Private populations**: Only accessible to the owner's API key
+- **Custom populations**: Only accessible to the owner's API key
 
 <AccordionGroup>
   <Accordion title="Public populations">
     - Can be used by any authenticated API user
-    - Ideal for common user profiles ("US Adults", "Software Developers")
-    - UUIDs can be shared in documentation and examples
+    - Ideal for common user profiles ("US Adults", "Developers")
+    - IDs can be shared in documentation and examples
   </Accordion>
 
-  <Accordion title="Private populations">
+  <Accordion title="Custom populations">
     - Only accessible with the owner's API key
     - Perfect for proprietary customer segments
-    - UUIDs should be kept secure like API keys
+    - IDs should be kept secure like API keys, though only owners of a custom population can use it for simulations
   </Accordion>
 </AccordionGroup>
 
@@ -86,16 +84,10 @@ When making API calls, you can access:
   <img src="/images/populations/introduction/public_private.png" />
 </Frame>
 
-## Finding Population IDs
+## Finding population IDs
 
-To use a population in your API calls, you need its UUID. You can find population IDs by:
+To use a population in your API calls, you need its ID. Navigate to the [Populations page](https://semilattice.ai/populations) in your dashboard and select a population model to use. Copy the ID from the population's metadata or from the address bar.
 
-1. **Dashboard**: Browse populations at [semilattice.ai/populations](https://semilattice.ai/populations) and copy the UUID from the URL
-2. **API**: Use the populations endpoint to list available populations programmatically
-
-```python
-# Example: List available populations
-populations = semilattice.populations.list()
-for pop in populations.data:
-    print(f"{pop.name}: {pop.id}")
-```
+<Frame caption="Click to copy the population model's ID">
+  <img src="/images/quickstart/select_population_id.png" />
+</Frame>

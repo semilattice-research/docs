@@ -42,7 +42,7 @@
                                 "answers/simulate-answer",
                                 "answers/benchmark-answer"
                             ],
-                            "icon": "message-question"
+                            "icon": "chart-simple"
                         }
                     ],
                     "icon": "book"
@@ -51,7 +51,7 @@
         },
         {
             "tab": "API Reference",
-            "openapi": "https://alexander-api.semilattice.ai/openapi.json"
+            "openapi": "https://api.semilattice.ai/openapi.json"
         }
     ]
   },
@@ -61,8 +61,8 @@
   },
   "background": {
     "color": {
-      "light": "#F4FBF7",
-      "dark": "#1D3B31"
+      "light": "#FCFCFC",
+      "dark": "#202020"
     }
   },
   "navbar": {
@@ -75,7 +75,7 @@
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://semilattice.ai/answers/new"
+      "href": "https://semilattice.ai/populations"
     }
   },
   "footer": {

@@ -1,59 +1,117 @@
 ---
 title: "Node.js"
-description: "Get started with Semilattice's Node.js SDK"
+description: "Get started with the Semilattice Node.js SDK"
 ---
 
-## Get your API key
+<Steps>
+  <Step title="Get your API key">
+    First, [sign up](https://semilattice.ai/sign-up) for a Semilattice account and create an API key from the dashboard.
+  </Step>
+  
+  <Step title="Install">
+    Install the Semilattice Node.js SDK:
+    
+    ```bash
+    npm install semilattice
+    ```
+  </Step>
+  
+  <Step title="Initialise the client">
+    ```javascript
+    const { Semilattice } = require('semilattice');
+    
+    const semilattice = new Semilattice({
+      apiKey: process.env['SEMILATTICE_API_KEY'], // This is the default and can be omitted
+    });
+    ```
+  </Step>
+  
+  <Step title="Choose a population model">
+    Navigate to the [Populations page](https://semilattice.ai/populations) on your dashboard and select a population model to use. Copy the ID from the population's metadata or from the address bar.
+    
+    <Frame caption="Click to copy the population model's ID">
+      <img src="/images/quickstart/select_population_id.png" />
+    </Frame>
+  </Step>
+  
+  <Step title="Simulate an answer">
+    The `answers.simulate` method simulates how this population would answer a question. Below, we are simulating how this population would respond to the question "Tech debt or unclear error messages, what's worse?".
 
-First, [sign up](https://semilattice.ai/sign-up) for a Semilattice account and create an API key from your dashboard.
+    ```javascript
+    const result = await semilattice.answers.simulate({
+        population_id: "your-population-id-here",
+        answers: {
+            question: "Tech debt or unclear error messages, what's worse?",
+            question_options: { question_type: "single-choice" },
+            answer_options: ["Tech debt", "Unclear error messages"]
+        }
+    });
+    ```
+  </Step>
+  
+  <Step title="Handle the response">
 
-## Install
-
-Install the Semilattice Node.js SDK:
-
-```bash
-npm install semilattice
-```
-
-## Initialize the client
-
-```javascript
-const { Semilattice } = require('semilattice');
-
-const semilattice = new Semilattice({
-  apiKey: process.env['SEMILATTICE_API_KEY'], // This is the default and can be omitted
-});
-```
-
-## Choose a Population Model
-
-Navigate to the [Populations page](https://semilattice.ai/populations) on your dashboard and select a population model to use. Copy the UUID from the address bar after `/populations/...` (we'll improve this experience in the future).
-
-## Simulate an answer
-
-```javascript
-const result = await semilattice.answers.simulate({
-    population_id: "your-population-uuid-here",
-    answers: {
-        question: "Rain or wind, what's worse?",
-        question_options: { question_type: "single-choice" },
-        answer_options: ["Rain", "Wind"]
+    The API will return immediately, but the simulation runs asynchronously. The initial response will have a `status` field set to "Queued":
+    
+    ```javascript
+    {
+        data: [
+            {
+                id: '84a92e29-54e6-4a60-862d-26cd2a78421e',
+                benchmark_id: null,
+                created_at: '2025-06-06T18:18:43.370198Z',
+                simulated_answer_percentages: null,
+                ground_answer_counts: null,
+                ground_answer_percentages: null,
+                kullback_leibler_divergence: null,
+                mean_absolute_error: null,
+                mean_squared_error: null,
+                normalised_kullback_leibler_divergence: null,
+                population: 'd670f351-8567-4586-9bba-b81add1bebe3',
+                prediction_finished_at: null,
+                prediction_started_at: null,
+                public: false,
+                simulation_engine: 'answers-1',
+                status: 'Queued',
+                test_finished_at: null,
+                test_started_at: null,
+                answer_options: ['Tech debt', 'Unclear error messages'],
+                population_name: 'Developers',
+                question: 'Tech debt or unclear error messages, what\'s worse?',
+                question_options: { question_type: 'single-choice' },
+                accuracy: null,
+                root_mean_squared_error: null
+            }
+        ],
+        errors: []
     }
-});
-```
+    ```
+  </Step>
+  
+  <Step title="Poll for results">
+    The simulation will progress through these statuses: `Queued` → `Running` → `Predicted` (or potentially `Failed`). Predictions typically take less than a minute.
+    
+    Poll for the result using the answer ID:
+    
+    ```javascript
+    while (result.data[0].status !== "Predicted") {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        result = await semilattice.answers.get(result.data[0].id);
+    }
+    ```
+  </Step>
+  
+  <Step title="View the results">
 
-## Handle the response
-
-The API will return immediately, but the simulation runs asynchronously. The initial response will have a `status` field set to "Queued":
-
-```javascript
-{
-    data: [
-        {
+    Once the simulation completes, the `simulated_answer_percentages` field will contain the prediction results:
+    
+    ```javascript
+    {
+        data: {
             id: '84a92e29-54e6-4a60-862d-26cd2a78421e',
             benchmark_id: null,
             created_at: '2025-06-06T18:18:43.370198Z',
-            simulated_answer_percentages: null,
+            simulated_answer_percentages: { 'Tech debt': 0.5488, 'Unclear error messages': 0.4512 },
             ground_answer_counts: null,
             ground_answer_percentages: null,
             kullback_leibler_divergence: null,
@@ -61,92 +119,27 @@ The API will return immediately, but the simulation runs asynchronously. The ini
             mean_squared_error: null,
             normalised_kullback_leibler_divergence: null,
             population: 'd670f351-8567-4586-9bba-b81add1bebe3',
-            prediction_finished_at: null,
-            prediction_started_at: null,
+            prediction_finished_at: '2025-06-06T18:19:36.418871Z',
+            prediction_started_at: '2025-06-06T18:18:45.085523Z',
             public: false,
             simulation_engine: 'answers-1',
-            status: 'Queued',
+            status: 'Predicted',
             test_finished_at: null,
             test_started_at: null,
-            answer_options: ['Tech debt', 'Confusing error messages'],
+            answer_options: [ 'Tech debt', 'Unclear error messages' ],
             population_name: 'Developers',
-            question: 'Which is worse?',
+            question: 'Tech debt or unclear error messages, what\'s worse?',
             question_options: { question_type: 'single-choice' },
             accuracy: null,
             root_mean_squared_error: null
-        }
-    ],
-    errors: []
-}
-```
-
-## Poll for results
-
-The simulation will progress through these statuses: `Queued` → `Running` → `Predicted` (or potentially `Failed`). Predictions typically take less than a minute.
-
-Poll for the result using the answer ID:
-
-```javascript
-const answerId = result.data[0].id;
-
-const pollForResult = async () => {
-    while (true) {
-        const answer = await semilattice.answers.get(answerId);
-        
-        if (answer.data.status === 'Predicted') {
-            console.log("Simulation complete!");
-            console.log(`Results: ${JSON.stringify(answer.data.simulated_answer_percentages)}`);
-            return answer.data;
-        } else if (answer.data.status === 'Failed') {
-            console.log("Simulation failed");
-            throw new Error("Simulation failed");
-        }
-        
-        console.log(`Status: ${answer.data.status}`);
-        await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+        },
+        errors: []
     }
-};
-
-const finalResult = await pollForResult();
-```
-
-## View the results
-
-Once the simulation completes, the `simulated_answer_percentages` field will contain the prediction results:
-
-```javascript
-{
-    data: {
-        id: '84a92e29-54e6-4a60-862d-26cd2a78421e',
-        benchmark_id: null,
-        created_at: '2025-06-06T18:18:43.370198Z',
-        simulated_answer_percentages: { 'Tech debt': 0.5488, 'Confusing error messages': 0.4512 },
-        ground_answer_counts: null,
-        ground_answer_percentages: null,
-        kullback_leibler_divergence: null,
-        mean_absolute_error: null,
-        mean_squared_error: null,
-        normalised_kullback_leibler_divergence: null,
-        population: 'd670f351-8567-4586-9bba-b81add1bebe3',
-        prediction_finished_at: '2025-06-06T18:19:36.418871Z',
-        prediction_started_at: '2025-06-06T18:18:45.085523Z',
-        public: false,
-        simulation_engine: 'answers-1',
-        status: 'Predicted',
-        test_finished_at: null,
-        test_started_at: null,
-        answer_options: [ 'Tech debt', 'Confusing error messages' ],
-        population_name: 'Developers',
-        question: 'Which is worse?',
-        question_options: { question_type: 'single-choice' },
-        accuracy: null,
-        root_mean_squared_error: null
-    },
-    errors: []
-}
-```
-
-The `simulated_answer_percentages` object shows the predicted percentage of the population that would choose each answer option. In this example, 54.88% would choose "Tech debt" and 45.12% would choose "Confusing error messages".
+    ```
+    
+    The `simulated_answer_percentages` object shows the predicted percentage of the population that would choose each answer option. In this example, 54.88% would choose "Tech debt" and 45.12% would choose "Unclear error messages".
+  </Step>
+</Steps>
 
 ## Next steps
 

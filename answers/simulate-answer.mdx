@@ -1,11 +1,11 @@
 ---
 title: "Simulate an Answer"
-description: "Predict how populations respond to new questions"
+description: "Simulate how populations would answer new questions"
 ---
 
-Answer simulation lets you predict how a specific user profile would respond to new questions. This is the core functionality for market research, product decisions, and understanding audience preferences.
+Answer simulation lets you predict how a specific population would answer new questions.
 
-## Basic Usage
+## Basic usage
 
 <CodeGroup>
 ```python Python
@@ -14,7 +14,7 @@ from semilattice import Semilattice
 semilattice = Semilattice()
 
 result = semilattice.answers.simulate(
-    population_id="d670f351-8567-4586-9bba-b81add1bebe3",
+    population_id="population-id",
     answers={
         "question": "Which is worse?",
         "question_options": {"question_type": "single-choice"},
@@ -29,7 +29,7 @@ const { Semilattice } = require('semilattice');
 const semilattice = new Semilattice();
 
 const result = await semilattice.answers.simulate({
-    population_id: "d670f351-8567-4586-9bba-b81add1bebe3",
+    population_id: "population-id",
     answers: {
         question: 'Which is worse?', 
         question_options: { question_type: 'single-choice' },
@@ -39,15 +39,15 @@ const result = await semilattice.answers.simulate({
 ```
 </CodeGroup>
 
-## Question Types
+## Question types
 
-### Single-Choice Questions
-Respondents select exactly one option:
+### Single-choice Questions
+Simulates respondents selecting exactly one option:
 
 <CodeGroup>
 ```python Python
 result = semilattice.answers.simulate(
-    population_id="your-population-id",
+    population_id="population-id",
     answers={
         "question": "What's your preferred IDE?",
         "question_options": {"question_type": "single-choice"},
@@ -58,7 +58,7 @@ result = semilattice.answers.simulate(
 
 ```javascript Node.js
 const result = await semilattice.answers.simulate({
-    population_id: "your-population-id",
+    population_id: "population-id",
     answers: {
         question: "What's your preferred IDE?",
         question_options: { question_type: "single-choice" },
@@ -68,13 +68,13 @@ const result = await semilattice.answers.simulate({
 ```
 </CodeGroup>
 
-### Multiple-Choice Questions
-Respondents can select multiple options:
+### Multiple-choice Questions
+Simulates respondents selecting multiple options:
 
 <CodeGroup>
 ```python Python
 result = semilattice.answers.simulate(
-    population_id="your-population-id",
+    population_id="population-id",
     answers={
         "question": "Which programming languages do you use regularly?",
         "question_options": {"question_type": "multiple-choice"},
@@ -85,7 +85,7 @@ result = semilattice.answers.simulate(
 
 ```javascript Node.js
 const result = await semilattice.answers.simulate({
-    population_id: "your-population-id",
+    population_id: "population-id",
     answers: {
         question: "Which programming languages do you use regularly?",
         question_options: { question_type: "multiple-choice" },
@@ -95,13 +95,13 @@ const result = await semilattice.answers.simulate({
 ```
 </CodeGroup>
 
-### Open-Ended Questions
-Respondents provide free-text answers (currently in alpha):
+### Open-ended Questions
+Simulates respondents providing free-text answers (currently in alpha):
 
 <CodeGroup>
 ```python Python
 result = semilattice.answers.simulate(
-    population_id="your-population-id",
+    population_id="population-id",
     answers={
         "question": "What's the biggest challenge facing developers today?",
         "question_options": {"question_type": "open-ended"}
@@ -112,7 +112,7 @@ result = semilattice.answers.simulate(
 
 ```javascript Node.js
 const result = await semilattice.answers.simulate({
-    population_id: "your-population-id",
+    population_id: "population-id",
     answers: {
         question: "What's the biggest challenge facing developers today?",
         question_options: { question_type: "open-ended" }
@@ -122,11 +122,11 @@ const result = await semilattice.answers.simulate({
 ```
 </CodeGroup>
 
-## Handling Async Results
+## Handling async results
 
 Simulations run asynchronously. The initial response has `status: "Queued"`, and you need to poll for completion:
 
-### Initial Response
+### Initial response
 ```json
 {
     "data": [
@@ -144,7 +144,7 @@ Simulations run asynchronously. The initial response has `status: "Queued"`, and
 }
 ```
 
-### Polling for Results
+### Polling for results
 
 <CodeGroup>
 ```python Python
@@ -152,43 +152,26 @@ import time
 
 answer_id = result.data[0].id
 
-while True:
-    answer = semilattice.answers.get(answer_id)
-    
-    if answer.data.status == 'Predicted':
-        print("Simulation complete!")
-        break
-    elif answer.data.status == 'Failed':
-        print("Simulation failed")
-        break
-    
-    print(f"Status: {answer.data.status}")
-    time.sleep(5)  # Wait 5 seconds before checking again
+while result.data[0].status != "Predicted":
+    time.sleep(1)
+    result = semilattice.answers.get(answer_id)
+
+print("Simulation complete!")
 ```
 
 ```javascript Node.js
-const answerId = result.data[0].id;
-
-while (true) {
-    const answer = await semilattice.answers.get(answerId);
-    
-    if (answer.data.status === 'Predicted') {
-        console.log("Simulation complete!");
-        break;
-    } else if (answer.data.status === 'Failed') {
-        console.log("Simulation failed");
-        break;
-    }
-    
-    console.log(`Status: ${answer.data.status}`);
-    await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+while (result.data[0].status !== "Predicted") {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    result = await semilattice.answers.get(result.data[0].id);
 }
+
+console.log("Simulation complete!");
 ```
 </CodeGroup>
 
-## Understanding Results
+## Understanding results
 
-### Single-Choice and Multiple-Choice Results
+### Single-choice and multiple-choice results
 The `simulated_answer_percentages` shows the predicted distribution across your answer options:
 
 ```json
@@ -212,7 +195,7 @@ This means:
 - 54.88% of the population would choose "Tech debt"
 - 45.12% would choose "Confusing error messages"
 
-### Open-Ended Results
+### Open-ended Results
 For open-ended questions, `simulated_answer_percentages` contains many unique responses:
 
 ```json
@@ -232,22 +215,19 @@ For open-ended questions, `simulated_answer_percentages` contains many unique re
 }
 ```
 
-## Important Notes for Simulated Answers
+## Important notes for simulated answers
 
-### No Ground Truth Data
+### No ground truth data
 For simulated answers, these fields are always `null`:
 - `ground_answer_percentages`: We don't know the real-world distribution
 - `ground_answer_counts`: We don't have actual response counts
 - `accuracy`: We can't measure accuracy without ground truth
-- All evaluation metrics (MAE, RMSE, etc.): Not applicable without ground truth
+- `mean_absolute_error`: No ground truth to compare against
+- `mean_squared_error`: No ground truth to compare against
+- `normalised_kullback_leibler_divergence`: No ground truth to compare against
+- `kullback_leibler_divergence`: No ground truth to compare against
 
-### Accuracy Estimation
-The reliability of simulated predictions depends on:
-1. **Population quality**: Check your population's evaluation metrics
-2. **Question similarity**: How closely your question matches the population's seed data
-3. **Subject expertise**: Whether the population was trained on relevant topics
-
-### Best Practices
+### Best practices
 
 <CardGroup cols={2}>
   <Card title="Choose the right population" icon="target">
@@ -263,9 +243,3 @@ The reliability of simulated predictions depends on:
     Test your population with known questions before using it for important predictions.
   </Card>
 </CardGroup>
-
-## Next Steps
-
-- **Validate accuracy**: Use [benchmark testing](/answers/benchmark-answer) to verify your population's performance
-- **Improve populations**: Create better populations with more relevant [seed data](/populations/seed-data-requirements)
-- **Scale your research**: Integrate answer simulation into your product research workflow
