@@ -33,8 +33,9 @@ simulation_options = {
             "question_number": 1,
             "question_type": "single-choice"
         },
+        # { ... 18 other question option dicts ... }
         {
-            "question_number": 2,
+            "question_number": 20,
             "question_type": "multiple-choice",
             "limit": 3
         }
@@ -65,8 +66,9 @@ const simulationOptions = {
             question_number: 1,
             question_type: "single-choice"
         },
+        // { ...18 other question option objects... }
         {
-            question_number: 2,
+            question_number: 20,
             question_type: "multiple-choice",
             limit: 3
         }
@@ -99,8 +101,9 @@ const population = await semilattice.populations.create({
 
 ### Simulation options
 
-The `simulation_options` parameter configures how questions are interpreted during simulation:
+Simulation options tell the API how to simulate the behaviour of the population when running [test simulations](/populations/evaluation). Semilattice supports single-choice, multiple-choice, and open-ended [question types](/populations/seed-data-requirements#question-types), so the API needs to know which of these types each column in the seed dataset represents.
 
+<CodeGroup>
 ```python
 simulation_options = {
     "question_options": [
@@ -112,28 +115,45 @@ simulation_options = {
             "question_number": 2,
             "question_type": "multiple-choice",
             "limit": 2
-        }
+        },
+        # { ... question option dicts for all columns ... }
     ]
 }
 ```
+```javascript Node.js
+const simulationOptions = {
+    question_options: [
+        {
+            question_number: 1,
+            question_type: "single-choice"
+        },
+        {
+            question_number: 20,
+            question_type: "multiple-choice",
+            limit: 3
+        },
+        // { ... question option objects for all columns ... }
+    ]
+};
+</CodeGroup>
 
-**Field Descriptions:**
+**Simulation options object**
+The simulation options object must be a valid JSON object containing one `question_options` key. The value of `question_options` should be a valid JSON list containing one object for each question column in the dataset. The `sim_id` column does not need to be referenced.
 
-- **`question_number`**: A 1-based index reference to the column in the seed data file. For example, if the first question column in your CSV is a single-choice question, you would set `"question_number": 1`.
+**Question options field descriptions:**
 
-- **`question_type`**: An enum describing the data type for that column in the seed data file:
-  - `single-choice`: Column cells contain strings representing individual answers (e.g., "Python", "JavaScript")
-  - `multiple-choice`: Column cells contain valid lists of strings representing sets of answers (e.g., ["Python", "JavaScript", "Go"])
-  - `open-ended`: Column cells contain any string representing free text answers
+- **`question_number`**: A 1-based index reference to the column in the seed data file these questions options describe. For example, when setting question objects for the 3rd question column in the dataset, which would be the 4th column in the CSV after the `sim_id` column, the `question_number` should be `3`.
 
-- **`limit`** (optional): For `multiple-choice` questions only, sets the maximum number of choices a respondent can select during simulation.
+- **`question_type`**: An enum describing the [question type](/populations/seed-data-requirements#question-types) for that question column. Must be one of: `single-choice`, `multiple-choice`, `open-ended`.
+
+- **`limit`** (optional): For `multiple-choice` questions only, this sets the maximum number of choices respondents were allowed to select.
 
 **Requirements:**
-- There must be one object for each question column in the seed data file in the "question_options" list field
-- The `question_number` values should correspond to the actual column positions in your CSV file
-- Question types must match the actual data format in your seed data
+- The `question_options` list must contain one object for each question column in the seed data file.
+- The `question_number` values should be integers corresponding to the 1-based column positions in your CSV file. The order of the question option objects doesn't matter, but we suggest sequential ordering to avoid confusion.
+- The `question_type` specified for a column must match the actual data for that column in the CSV.
 
-This configuration ensures test simulations run correctly when evaluating population accuracy. For more details on data format requirements, see the [Seed Data Requirements](/populations/seed-data-requirements) guide.
+This configuration ensures test simulations run correctly when evaluating population accuracy. For more details on data format requirements, see [Seed Data Requirements](/populations/seed-data-requirements).
 
 ## Population status flow
 

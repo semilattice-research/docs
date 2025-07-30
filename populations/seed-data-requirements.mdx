@@ -9,51 +9,72 @@ description: "CSV format and data quality requirements for population creation"
 
 ![Seed Data](/images/populations/seed_data/hero.png)
 
-This page outlines the technical requirements and best practices for preparing CSV data to create custom populations. Your data quality directly impacts prediction accuracy, so following these guidelines is essential.
+Semilattice needs a small sample of data from the [target population](/populations/introduction#target-population) to make predictions. This page explains the data requirements and some core concepts which will help you to create good population models.
 
-## Overview
+## Requirements
+Populations require tabular, individual-level question-answer pair data from the group of people the population aims to model. For example: data from a survey, poll, questionnaire, or onboarding form where each row is an individual's answers to a set of questions.
 
-Your CSV file should contain QA pair data where each row represents one respondent and each column represents their answer to a multiple-choice question. This data creates your population model to make accurate predictions for similar groups.
+### Question types
+The API supports three question types in seed datasets:
+- **single-choice**: individuals choose a single answer from a finite list of options.
+- **multiple-choice**: individuals choose multiple answers from a finite list of options, sometimes with a choice limit.
+- **open-ended**: individuals answer in their own words.
 
-### CSV format requirements
+See the technical requirements below for how these question types should be formatted in your seed data file.
 
-Your CSV file must meet these technical specifications:
+### Technical requirements
+The API accepts `.csv` files which meet the following requirements:
+- the first column must be titled **sim_id**
+- the **sim_id** column should contain a unique number in each row
+- there should be between **4** and **999** question columns
+- questions must be between **3** and **999** characters long
+- there should be between **1** and **99,999** respondent rows
+- answer cells can be empty
+- non-empty answers must be no more than **999** characters long
+- answers cannot contain newline characters
+Question type-specific requirements:
+- for single-choice and multiple-choice questions, there should be between **1** and **500** unique answer choices
+- non-empty answer cells for single-choice and open-ended questions must be valid strings representing the respondent's answer e.g. "Somewhat Agree" or "I usually go to the beach"
+- non-empty answer cells for multiple-choice questions must be valid lists of quoted strings representing the respondent's set of answer choices e.g. ["Chocolate", "Vanilla", "Lemon sorbet"]
 
-| Requirement | Value | Notes |
-|-------------|-------|-------|
-| **First column** | `sim_id` | Unique identifier for each respondent |
-| **Question columns** | 5-20 | Each column header is the question text |
-| **Respondent rows** | 25-3,000 | More respondents = better accuracy |
-| **Question length** | 3-300 characters | Clear, concise questions work best |
-| **Answer length** | Max 200 characters | Short, distinct answer options |
-| **Missing data** | Max 5% empty cells | Minimal gaps in responses |
-| **Answer options** | 1-15 per question | Multiple choice options |
+<Note>
+    While the API supports very small and very large datasets, due to the availability of ground truth data most of our modelling and benchmarking work to date was done with datasets containing ~5-20 questions from ~50-3,000 respondents with fewer than 5% empty cells. Dataset size is a modelling decision and we encourage experimentation by running [population tests](/populations/evaluation) and [benchmark simulations](/answers/benchmark-answer) to fight the best subset for your goals.
+</Note>
+
+### Example
+This very small CSV is valid, containing answers to 4 questions from 10 respondents. The first two question columns are single-choice questions, the third is multiple-choice, and the fourth is open-ended.
 
 ```csv
-sim_id,"What's your primary role?","How many years of experience?","Preferred development environment?"
-1,"Software Engineer","3-5 years","VS Code"
-2,"Product Manager","1-2 years","Notion"
-3,"Data Scientist","5+ years","Jupyter"
+sim_id,"What's your title?","How many years have you been coding?","Which languages do you know?","How do you feel about AI?"
+1,"Software Engineer","3-5 years","['Java']","optimistic!"
+2,"Senior Software Engineer","5-8 years","['JavaScript', 'Python']",""
+3,"Data Scientist","1-2 years","['Python', 'R']","dunno"
+4,"Software Engineer","3-5 years","['JavaScript', 'Java']","I love it, use it all the time"
+5,"Software Engineer","1-2 years","['Rust']","not sure but very curious"
+6,"DevOps Engineer","3-5 years","['JavaScript', 'Lisp']","it cant do devops yet"
+7,"Software Engineer","8+ years","['Go', 'Rust', 'C']",""
+8,"Back-End Engineer","5-8 years","['Python', 'JavaScript']","scared/excited"
+9,"Back-End Engineer","1-2 years","['Rust', 'C']",""
+10,"Software Engineer","2-5 years","['Go', 'JavaScript', 'Java']","we shall seeeee"
 ```
 
-### Data quality guidelines
-
-While the API accepts any CSV meeting technical requirements, following these guidelines ensures better population accuracy:
+### Qualitative requirements & guidelines
+The API doesn't check if your seed data follows these requirements and guidelines, but they are essential to creating effective populations.
 <AccordionGroup>
-    <Accordion title="Headers should be clear questions">
-        Column headers become the question text in API responses. Use complete questions: "What is your favourite colour?" rather than just "Colour".
+    <Accordion title="Column headers should be questions or propositions">
+        Semilattice assumes column headers are questions or propositions: pieces of text posed to people who can respond with an answer. For example, "What is your favourite colour?" is a question while "You believe reality is..." is a proposition.
     </Accordion>
-    <Accordion title="Each question should be self-contained">
-        Questions can't reference other questions. Avoid "How strongly do you feel about your previous answer?" Instead, make each question standalone: "How important is work-life balance to you?"
+    <Accordion title="Questions cannot assume knowledge of other questions">
+        Questions can't assume the responder has any knowledge of the other questions in the dataset. For example, the question "How strongly do you feel about your answer to the last question?" will not work because with simulated respondents there isn't an equivalent of a last question.
     </Accordion>
-    <Accordion title="Answer options should be independent">
-        Avoid answer options like "None of the above" or "All of the above" since their meaning depends on other options. Use specific alternatives: "None" or "Other".
+    <Accordion title="Answer options cannot refer to other answer options">
+        Answer options cannot refer to the question's other answer options. For example, the answer option "None of the above" is invalid because its meaning depends on the other answer options. However, "None" is valid as its meaning is independent.
     </Accordion>
-    <Accordion title="Use human-readable text">
-        Convert survey codes to full text. Instead of "Q1_A3", use "Very satisfied". This ensures accurate API predictions since the AI understands natural language.
+    <Accordion title="Questions and answer options must be human-readable">
+        Question-answer pair datasets often record questions and answers as descriptors, identifiers, or codes requiring lookup in data dictionaries. Semilattice only accept a single `.csv`, so questions and answers have to be decoded into human-readable values.
     </Accordion>
-    <Accordion title="All questions and answers should come from the same survey, poll, or questionnaire">
-        Mixing data from different samples is not recommended. Semilattice assumes seed data come from a single survey, poll, or questionnaire.
+    <Accordion title="All questions and answers should come from the same source such as a single survey, questionnaire, or onboarding form">
+        Mixing data from different samples is not recommended. Semilattice assumes seed data come from a source.
     </Accordion>
     <Accordion title="Answers in a row should all come from the same person">
         Mixing answers from different people is not recommended. Semilattice assumes all the answers in a row come from the same person.
@@ -63,11 +84,8 @@ While the API accepts any CSV meeting technical requirements, following these gu
 ### Good to know
 These considerations are useful to bear in mind.
 <AccordionGroup>
-    <Accordion title="The unique values in a column define the question's answer options">
-        The set of unique values in a column define the answer options for the question in that column. For example, the unique values under the question header "What is your favourite colour?" may be: "Red", "Green", "Blue", "Yellow", "Purple", "Orange", "Teal", "Pink", "Brown", "Indigo".
-    </Accordion>
     <Accordion title="Other types of questions can be reformatted to be compatible, with caution">
-        Questions which were originally posed as single option multiple-choice questions are recommended, but if necessary other, compatible types of questions can be reformatted. For example, multiple selection questions (e.g. "Choose all that apply...") can be reformatted into one binary question for each selection option (e.g. "Do you do X?", "Do you do Y?", ...). Or you can group and recode respondents' answers to free text questions to make a single option multiple-choice question. Caution is advised though: the more you reformat, the more your seed data will diverge from reality.
+        Questions which were originally posed as single-choice, multiple-choice, or open-ended questions are recommended, but if necessary other types of questions can be reformatted to meet the technical requirements. Caution is advised though: the more you reformat, the more your seed data will diverge from reality.
     </Accordion>
     <Accordion title="Question order doesn't matter">
         The order of the question columns in your seed data has no effect. Questions will be used in various ways, in various orders.
@@ -76,55 +94,36 @@ These considerations are useful to bear in mind.
         Answer options will be presented in random order by default. Answer options with semantic order (e.g. "Strongly Agree" to "Strongly Disagree") are perfectly valid, but answer options which assume an order (e.g. "None of the above") are not. Answer options like "None of the above" should be reformatted to stand alone, e.g. "None".
     </Accordion>
     <Accordion title="Bigger datasets can be filtered, with caution">
-        You can filter large datasets down to specific segments, subsets of questions, or the right number of respondents for Semilattice. However, just like with a real-world survey, heavy filtering of a dataset can reduce the quality of the resultant sample and can lead to lower accuracy Populations in Semilattice.
+        You can filter large datasets down to specific segments, subsets of questions, or the right number of respondents for Semilattice. However, just like with a real-world dataset, heavy filtering can reduce the quality of the resultant sample and can lead to lower accuracy population models.
     </Accordion>
 </AccordionGroup>
 
-## How population creation works
+## Seed data are not the only data
+A population's seed data do not represent all of the information which Semilattice uses to make predictions. Most of the information comes from the Large Language Model (LLM) used by the Simulation Engine, with the seed data effectively selecting the relevant information from the LLM.
 
-Your CSV data creates the population model, but predictions also leverage Semilattice's underlying AI. The seed data acts as a "filter" that selects relevant knowledge from the AI model.
+This means that you should think about the **predictive power** of the questions and answers in the seed data rather than the actual information contained in those questions.
 
-This means your questions should have **predictive power** - they should reveal information that correlates with how your target group would answer new questions.
+## Predictive power
+A population's accuracy when predicting the answer to a new question is dependent on the predictive power of the questions and answers in its seed data. This predictive power varies depending on the question being predicted and is a function of how those seed data work with the Simulation Engine.
 
-## Choosing seed questions
-
-The questions in your seed data determine prediction accuracy. Better seed questions lead to more accurate API responses.
-
-### What makes a good seed question?
-
-Think about how informative each answer would be:
-- **High predictive power**: Age, profession, education level, core values
-- **Low predictive power**: Favourite colour, random preferences unrelated to your use case
-- **Context-dependent**: Food preferences matter for restaurant surveys but not for software feedback
-
-### Understanding predictive power
-
-A population's accuracy when predicting the answer to a new question is dependent on the predictive power of the questions and answers in its seed data. This predictive power varies depending on the question being predicted and is a function of how those seed data work with the simulation engine.
-
-**Predictive power cannot be predicted**
-
+### Predictive power cannot be predicted
 Due to the black box nature of the LLMs used by Semilattice, it's not yet possible to tell which seed data have more predictive power with certainty.
 
-**Building intuition around predictive power**
-
+### Building intuition around predictive power
 An intuitive way of estimating the predictive power of a question is to think about how informative someone's answer to that question would be. For example, knowing someone's age tells you a lot more about them than knowing whether they prefer ketchup or mayonnaise. However, it's also important to consider the purpose of the population you are building. If you work in R&D at Heinz, the latter question will have more predictive power for the questions you plan to predict.
 
-Predictive power is an area of research for Semilattice. If you want to go deeper, it maps broadly to the concept of feature selection in machine learning & data mining.
+<Note>Predictive power is an area of research for Semilattice. If you want to go deeper, it maps broadly to the concept of [feature selection](https://en.wikipedia.org/wiki/Feature_selection) in machine learning & data mining.</Note>
 
-### Example: Developer population
-
-```csv
-sim_id,"Years of experience?","Primary language?","Team size?","Remote work preference?"
-1,"5+ years","Python","10+ people","Fully remote"
-2,"1-2 years","JavaScript","2-5 people","Hybrid"
-```
-
-These questions would help predict developer attitudes toward new frameworks, tools, or methodologies.
-
-
-## Best practices for API-ready populations
-
-- **Target your API use case**: Choose seed questions that relate to the types of predictions you'll make via API. Building a customer feedback population? Include questions about satisfaction, preferences, and user profiles.
-- **Avoid redundant questions**: Don't include multiple questions that reveal the same information. "Preferred condiment" and "Favorite fries topping" are too similar.
-- **Maximize data quality**: Aim for 20 questions and 1,000+ responses. More seed data typically means better API prediction accuracy.
-- **Test with real questions**: After creating your population, test it with questions similar to your API use case to validate accuracy.
+## Question selection best practices
+The subset of questions you include in your seed dataset has the biggest impact on the accuracy and predictive reach of your population. These best practices will help you achieve the best results.
+<CardGroup cols={1}>
+  <Card title="Maximise predictive power" icon="circle-1">
+    Pick questions with the most predictive power for your research objective.
+  </Card>
+  <Card title="Minimise subjective overlap" icon="circle-2">
+    Pick a diverse set of questions, minimising questions which reveal similar information. For example, the questions "Do you prefer ketchup, mayonnaise, or mustard?" and "What is your favourite condiment on french fries?" have a high degree of subjective overlap.
+  </Card>
+  <Card title="Maximise the number of questions and responses" icon="circle-3">
+    While not strictly required, a dataset with 20 questions and 3,000 responses is recommended. Datasets of 1,000 responses and ~10 questions can also work well.
+  </Card>
+</CardGroup>
