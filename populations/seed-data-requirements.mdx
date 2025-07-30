@@ -17,7 +17,7 @@ Populations require tabular, individual-level question-answer pair data from the
 ### Question types
 The API supports three question types in seed datasets:
 - **single-choice**: individuals choose a single answer from a finite list of options.
-- **multiple-choice**: individuals choose multiple answers from a finite list of options, sometimes with a choice limit.
+- **multiple-choice**: individuals choose multiple answers from a finite list of options, sometimes with a limit on the number of options they can choose.
 - **open-ended**: individuals answer in their own words.
 
 See the technical requirements below for how these question types should be formatted in your seed data file.
@@ -32,13 +32,14 @@ The API accepts `.csv` files which meet the following requirements:
 - answer cells can be empty
 - non-empty answers must be no more than **999** characters long
 - answers cannot contain newline characters
-Question type-specific requirements:
+
+Question type requirements:
 - for single-choice and multiple-choice questions, there should be between **1** and **500** unique answer choices
 - non-empty answer cells for single-choice and open-ended questions must be valid strings representing the respondent's answer e.g. "Somewhat Agree" or "I usually go to the beach"
-- non-empty answer cells for multiple-choice questions must be valid lists of quoted strings representing the respondent's set of answer choices e.g. ["Chocolate", "Vanilla", "Lemon sorbet"]
+- non-empty answer cells for multiple-choice questions must be valid lists of quoted strings representing the respondent's set of answer choices e.g. ['Chocolate', 'Vanilla', 'Lemon sorbet']
 
 <Note>
-    While the API supports very small and very large datasets, due to the availability of ground truth data most of our modelling and benchmarking work to date was done with datasets containing ~5-20 questions from ~50-3,000 respondents with fewer than 5% empty cells. Dataset size is a modelling decision and we encourage experimentation by running [population tests](/populations/evaluation) and [benchmark simulations](/answers/benchmark-answer) to fight the best subset for your goals.
+    While the API supports very small and very large datasets, due to the availability of ground truth data most of our modelling and benchmarking work to date was done with datasets containing ~5-20 questions from ~50-3,000 respondents with fewer than 5% empty cells. Dataset size is a modelling decision and we encourage experimentation by running [population tests](/populations/evaluation#population-test-internal) and [benchmark simulations](/populations/evaluation#benchmarking-test-external) to find the best subset for your goals.
 </Note>
 
 ### Example
