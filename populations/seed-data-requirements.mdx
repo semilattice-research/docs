@@ -34,9 +34,9 @@ The API accepts `.csv` files which meet the following requirements:
 - answers cannot contain newline characters
 
 Question type requirements:
-- for single-choice and multiple-choice questions, there should be between **1** and **500** unique answer choices
-- non-empty answer cells for single-choice and open-ended questions must be valid strings representing the respondent's answer e.g. "Somewhat Agree" or "I usually go to the beach"
-- non-empty answer cells for multiple-choice questions must be valid lists of quoted strings representing the respondent's set of answer choices e.g. ['Chocolate', 'Vanilla', 'Lemon sorbet']
+- for **single-choice** and **multiple-choice** questions, there should be between **1** and **500** unique answer choices
+- non-empty answer cells for **single-choice** and **open-ended** questions must be valid strings representing the respondent's answer e.g. "Somewhat Agree" or "I usually go to the beach"
+- non-empty answer cells for **multiple-choice** questions must be valid lists of quoted strings representing the respondent's set of answer choices e.g. "['Chocolate', 'Vanilla', 'Lemon sorbet']"
 
 <Note>
     While the API supports very small and very large datasets, due to the availability of ground truth data most of our modelling and benchmarking work to date was done with datasets containing ~5-20 questions from ~50-3,000 respondents with fewer than 5% empty cells. Dataset size is a modelling decision and we encourage experimentation by running [population tests](/populations/evaluation#population-test-internal) and [benchmark simulations](/populations/evaluation#benchmarking-test-external) to find the best subset for your goals.
