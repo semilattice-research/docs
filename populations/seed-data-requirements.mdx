@@ -20,6 +20,8 @@ The API supports three question types in seed datasets:
 - **multiple-choice**: individuals choose multiple answers from a finite list of options, sometimes with a limit on the number of options they can choose.
 - **open-ended**: individuals answer in their own words.
 
+Open-ended questions cannot be simulated, but open-ended question data is used by population models to simulate single-choice and multiple-choice questions.
+
 See the technical requirements below for how these question types should be formatted in your seed data file.
 
 ### Technical requirements
@@ -34,6 +36,7 @@ The API accepts `.csv` files which meet the following requirements:
 - answers cannot contain newline characters
 
 Question type requirements:
+- there must be at least one **single-choice** or **multiple-choice** question column in your seed data file because [**open-ended** questions cannot be tested](/populations/evaluation#open-ended-questions-cannot-be-tested)
 - for **single-choice** and **multiple-choice** questions, there should be between **1** and **500** unique answer choices
 - non-empty answer cells for **single-choice** and **open-ended** questions must be valid strings representing the respondent's answer e.g. "Somewhat Agree" or "I usually go to the beach"
 - non-empty answer cells for **multiple-choice** questions must be valid lists of quoted strings representing the respondent's set of answer choices e.g. "['Chocolate', 'Vanilla', 'Lemon sorbet']"

@@ -95,33 +95,6 @@ const result = await semilattice.answers.simulate({
 ```
 </CodeGroup>
 
-### Open-ended Questions
-Simulates respondents providing free-text answers (currently in alpha):
-
-<CodeGroup>
-```python Python
-result = semilattice.answers.simulate(
-    population_id="population-id",
-    answers={
-        "question": "What's the biggest challenge facing developers today?",
-        "question_options": {"question_type": "open-ended"}
-        # No answer_options needed for open-ended
-    }
-)
-```
-
-```javascript Node.js
-const result = await semilattice.answers.simulate({
-    population_id: "population-id",
-    answers: {
-        question: "What's the biggest challenge facing developers today?",
-        question_options: { question_type: "open-ended" }
-        // No answer_options needed for open-ended
-    }
-});
-```
-</CodeGroup>
-
 ## Handling async results
 
 Simulations run asynchronously. The initial response has `status: "Queued"`, and you need to poll for completion:
@@ -171,8 +144,7 @@ console.log("Simulation complete!");
 
 ## Understanding results
 
-### Single-choice and multiple-choice results
-The `simulated_answer_percentages` shows the predicted distribution across your answer options:
+The `simulated_answer_percentages` field shows the predicted distribution across your answer options:
 
 ```json
 {
@@ -194,26 +166,6 @@ The `simulated_answer_percentages` shows the predicted distribution across your 
 This means:
 - 54.88% of the population would choose "Tech debt"
 - 45.12% would choose "Confusing error messages"
-
-### Open-ended Results
-For open-ended questions, `simulated_answer_percentages` contains many unique responses:
-
-```json
-{
-    "simulated_answer_percentages": {
-        "Keeping up with new technologies": 0.23,
-        "Managing technical debt": 0.18,
-        "Poor documentation": 0.15,
-        "Debugging complex issues": 0.12,
-        "Time constraints and deadlines": 0.10,
-        "Communication with stakeholders": 0.08,
-        "Legacy system maintenance": 0.07,
-        "Security concerns": 0.04,
-        "Team coordination": 0.03
-        // ... many more unique responses
-    }
-}
-```
 
 ## Important notes for simulated answers
 

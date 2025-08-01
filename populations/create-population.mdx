@@ -26,8 +26,8 @@ from semilattice import Semilattice
 
 semilattice = Semilattice()
 
-# See simulation options section below
-simulation_options = {
+# See population options section below
+population_options = json.dumps({
     "question_options": [
         {
             "question_number": 1,
@@ -40,7 +40,7 @@ simulation_options = {
             "limit": 3
         }
     ]
-}
+})
 
 population = semilattice.populations.create(
     name="Developer Survey Q4 2024",
@@ -48,7 +48,7 @@ population = semilattice.populations.create(
     seed_data=Path("developer_survey_data.csv"),
     reality_target="Software Developers",
     simulation_engine="answers-1",
-    simulation_options=simulation_options,  # see below
+    population_options=population_options,  # see below
     run_test=False
 )
 ```
@@ -59,8 +59,8 @@ const fs = require('fs');
 
 const semilattice = new Semilattice();
 
-// See simulation options section below
-const simulationOptions = {
+// See population options section below
+const populationOptions = JSON.stringify({
     question_options: [
         {
             question_number: 1,
@@ -73,7 +73,7 @@ const simulationOptions = {
             limit: 3
         }
     ]
-};
+});
 
 const population = await semilattice.populations.create({
     name: "Developer Survey Q4 2024",
@@ -81,7 +81,7 @@ const population = await semilattice.populations.create({
     seed_data: fs.readFileSync("developer_survey_data.csv"),
     reality_target: "Software Developers",
     simulation_engine: "answers-1",
-    simulation_options: simulationOptions,  // see below
+    population_options: populationOptions,  // see below
     run_test: false
 });
 ```
@@ -93,19 +93,19 @@ const population = await semilattice.populations.create({
 |-----------|------|-------------|
 | `name` | string | Display name for your population |
 | `description` | string | Detailed description or documentation link |
-| `seed_data` | file/path | CSV file containing QA pair data |
+| `seed_data` | file/path | CSV file containing tabular QA pair data |
 | `reality_target` | string | Description of the target user profile |
-| `simulation_engine` | string | Engine version (typically "answers-1") |
-| `simulation_options` | object | Question type configuration for proper simulation (see below) |
-| `run_test` | boolean | Whether to automatically test accuracy after creation |
+| `simulation_engine` | string | Simulation engine version (typically "answers-1") |
+| `population_options` | object | Tells the API about the data in your seed data file |
+| `run_test` | boolean | Whether to automatically test the population after creation |
 
-### Simulation options
+### Population options
 
-Simulation options tell the API how to simulate the behaviour of the population when running [test simulations](/populations/evaluation). Semilattice supports single-choice, multiple-choice, and open-ended [question types](/populations/seed-data-requirements#question-types), so the API needs to know which of these types each column in the seed dataset represents.
+Population options tell the API how to process your seed data. Semilattice supports single-choice, multiple-choice, and open-ended [question types](/populations/seed-data-requirements#question-types) in seed data, so the API needs to know which of these types each column in the dataset represents.
 
 <CodeGroup>
 ```python
-simulation_options = {
+population_options = json.dumps({
     "question_options": [
         {
             "question_number": 1,
@@ -118,10 +118,10 @@ simulation_options = {
         },
         # { ... question option dicts for all columns ... }
     ]
-}
+})
 ```
 ```javascript Node.js
-const simulationOptions = {
+const populationOptions = JSON.stringify({
     question_options: [
         {
             question_number: 1,
@@ -134,12 +134,12 @@ const simulationOptions = {
         },
         // { ... question option objects for all columns ... }
     ]
-};
+});
 ```
 </CodeGroup>
 
-**Simulation options object**
-The simulation options object must be a valid JSON object containing one `question_options` key. The value of `question_options` should be a valid JSON list containing one object for each question column in the dataset. The `sim_id` column does not need to be referenced.
+**Population options object**
+The populations options object must be a valid JSON object containing one `question_options` key. The value of `question_options` should be a valid JSON list containing one object for each question column in the dataset. The `sim_id` column does not need to be referenced.
 
 **Question options field descriptions:**
 
@@ -202,7 +202,7 @@ population = semilattice.populations.create(
     seed_data=Path("developer_survey_data.csv"),
     reality_target="Software Developers",
     simulation_engine="answers-1",
-    simulation_options={},
+    population_options=population_options,
     run_test=True  # Automatically test after processing
 )
 ```
@@ -214,7 +214,7 @@ const population = await semilattice.populations.create({
     seed_data: fs.readFileSync("developer_survey_data.csv"),
     reality_target: "Software Developers",
     simulation_engine: "answers-1",
-    simulation_options: {},
+    population_options: populationOptions,
     run_test: true  // Automatically test after processing
 });
 ```

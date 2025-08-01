@@ -26,17 +26,14 @@ Answers represent how a **population** would respond to questions, not individua
 The **Answers** section in your dashboard shows all questions you've simulated across different populations. Each row represents a unique question-population combination, allowing you to track and compare predictions over time.
 
 ### Question types
-The API supports three types of questions:
+The API supports two types of questions:
 
-<CardGroup cols={3}>
+<CardGroup cols={2}>
   <Card title="Single-Choice" icon="circle-dot">
     Simulates respondents selecting exactly one option from a list of choices.
   </Card>
   <Card title="Multiple-Choice" icon="list-check">
     Simulates respondents selecting multiple options from a list of choices.
-  </Card>
-  <Card title="Open-Ended" icon="message">
-    Respondents provide free-text answers. **Currently in alpha!**
   </Card>
 </CardGroup>
 
@@ -71,14 +68,6 @@ When you want to **test a population** against questions with known answers:
   "question": "Which development tools do you use regularly?",
   "question_options": { "question_type": "multiple-choice" },
   "answer_options": ["VS Code", "Git", "Docker", "Kubernetes", "AWS"]
-}
-```
-
-### Open-ended
-```json
-{
-  "question": "What's the biggest challenge in software development?",
-  "question_options": { "question_type": "open-ended" }
 }
 ```
 

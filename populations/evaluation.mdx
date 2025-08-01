@@ -20,7 +20,7 @@ Population testing answers these questions by measuring performance against held
 
 Semilattice uses two types of testing to evaluate population model accuracy:
 
-### Population test (Internal)
+### Population test
 The default testing method uses your original seed data:
 1. **Question removal**: Temporarily removes each question and its answers from the model
 2. **Prediction**: Asks the model to predict answers for that removed question
@@ -28,13 +28,63 @@ The default testing method uses your original seed data:
 4. **Iteration**: Repeats this process across all questions in your dataset
 5. **Averaging**: Calculates average accuracy metrics across all questions
 
-### Benchmarking test (External)
+### Benchmarking test
 You can also test against separate data:
 - Uses completely separate test questions from the same target audience
 - Provides accuracy estimates for real-world performance
 - Currently available via API (UI support coming soon)
 
-<Note>Most accuracy scores in the product come from population tests (internal). The degree to which these represent real-world performance depends on how well your seed data represents the types of questions you'll ask in production.</Note>
+<Note>Most accuracy scores in the product come from population tests. The degree to which these represent real-world performance depends on how well your seed data represents the types of questions you'll ask in production.</Note>
+
+### Open-ended questions cannot be tested
+The API currently does not support simulating open-ended outputs, so it is not possible test the accuracy of population models against open-ended ground truth data. If your population model contains open-ended seed data, these questions will not be tested as part of population tests. Their status will appear as `status: "Not Tested"` and population accuracy metrics will be calculated based on the results from other questions.
+
+## Running population tests
+
+You can trigger population testing using the test method:
+
+<CodeGroup>
+```python Python
+# Trigger population testing
+population = semilattice.populations.test(population_id="your_population_id")
+population_id = population.data.id
+```
+
+```javascript Node.js
+// Trigger population testing
+const population = await semilattice.populations.test("your_population_id");
+const populationId = population.data.id;
+```
+</CodeGroup>
+
+You need to poll for completion as testing runs asynchronously:
+
+<CodeGroup>
+```python Python
+import time
+
+while population.data.status != "Tested":
+    time.sleep(1)
+    population = semilattice.populations.get(population_id=population_id)
+
+print("Testing complete!")
+```
+
+```javascript Node.js
+while (population.data.status !== "Tested") {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    population = await semilattice.populations.get(populationId);
+}
+
+console.log("Testing complete!");
+```
+</CodeGroup>
+
+The status field will progress through:
+1.  **"Testing"**: Population test is currently running
+2. **"Tested"**: Testing completed successfully, metrics are available
+
+If something goes wrong the status will be **"Action Required"**, indicating that testing failed due to a simulation error on one or more questions.
 
 ## Evaluation metrics
 
