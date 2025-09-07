@@ -52,7 +52,7 @@
         {
             "tab": "API Reference",
             "openapi": {
-                "source": "https://api.semilattice.ai/openapi.json",
+                "source": "https://alexander-api.semilattice.ai/openapi.json",
                 "directory": "api-reference"
             }
         }
