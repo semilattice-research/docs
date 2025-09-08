@@ -7,13 +7,17 @@ Answer simulation lets you predict how a specific population would answer new qu
 
 ## Basic usage
 
+<Warning>
+Simulations are asynchronous and take ~20 seconds to run. Please see the section on [handling async results](#handling-async-results) for more details.
+</Warning>
+
 <CodeGroup>
 ```python Python
 from semilattice import Semilattice
 
 semilattice = Semilattice()
 
-result = semilattice.answers.simulate(
+response = semilattice.answers.simulate(
     population_id="population-id",
     answers={
         "question": "Which is worse?",
@@ -28,7 +32,7 @@ const { Semilattice } = require('semilattice');
 
 const semilattice = new Semilattice();
 
-const result = await semilattice.answers.simulate({
+const response = await semilattice.answers.simulate({
     population_id: "population-id",
     answers: {
         question: 'Which is worse?', 
@@ -46,7 +50,7 @@ Simulates respondents selecting exactly one option:
 
 <CodeGroup>
 ```python Python
-result = semilattice.answers.simulate(
+response = semilattice.answers.simulate(
     population_id="population-id",
     answers={
         "question": "What's your preferred IDE?",
@@ -57,7 +61,7 @@ result = semilattice.answers.simulate(
 ```
 
 ```javascript Node.js
-const result = await semilattice.answers.simulate({
+const response = await semilattice.answers.simulate({
     population_id: "population-id",
     answers: {
         question: "What's your preferred IDE?",
@@ -73,7 +77,7 @@ Simulates respondents selecting multiple options:
 
 <CodeGroup>
 ```python Python
-result = semilattice.answers.simulate(
+response = semilattice.answers.simulate(
     population_id="population-id",
     answers={
         "question": "Which programming languages do you use regularly?",
@@ -84,7 +88,7 @@ result = semilattice.answers.simulate(
 ```
 
 ```javascript Node.js
-const result = await semilattice.answers.simulate({
+const response = await semilattice.answers.simulate({
     population_id: "population-id",
     answers: {
         question: "Which programming languages do you use regularly?",
@@ -123,19 +127,22 @@ Simulations run asynchronously. The initial response has `status: "Queued"`, and
 ```python Python
 import time
 
-answer_id = result.data[0].id
+answer = response.data[0]
 
-while result.data[0].status != "Predicted":
+while answer.status != "Predicted":
     time.sleep(1)
-    result = semilattice.answers.get(answer_id)
+    response = semilattice.answers.get(answer.id)
+    answer = response.data
 
 print("Simulation complete!")
 ```
 
 ```javascript Node.js
-while (result.data[0].status !== "Predicted") {
+let answer = response.data[0]
+while (answer.status !== "Predicted") {
     await new Promise(resolve => setTimeout(resolve, 1000));
-    result = await semilattice.answers.get(result.data[0].id);
+    response = await semilattice.answers.get(answer.id);
+    answer = response.data
 }
 
 console.log("Simulation complete!");

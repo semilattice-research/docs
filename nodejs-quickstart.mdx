@@ -38,7 +38,7 @@ description: "Get started with the Semilattice Node.js SDK"
     The `answers.simulate` method simulates how this population would answer a question. Below, we are simulating how this population would respond to the question "Tech debt or unclear error messages, what's worse?".
 
     ```javascript
-    const result = await semilattice.answers.simulate({
+    const response = await semilattice.answers.simulate({
         population_id: "your-population-id-here",
         answers: {
             question: "Tech debt or unclear error messages, what's worse?",
@@ -93,11 +93,15 @@ description: "Get started with the Semilattice Node.js SDK"
     
     Poll for the result using the answer ID:
     
-    ```javascript
-    while (result.data[0].status !== "Predicted") {
+    ```javascript Node.js
+    let answer = response.data[0]
+    while (answer.status !== "Predicted") {
         await new Promise(resolve => setTimeout(resolve, 1000));
-        result = await semilattice.answers.get(result.data[0].id);
+        response = await semilattice.answers.get(answer.id);
+        answer = response.data
     }
+
+    console.log("Simulation complete!");
     ```
   </Step>
   

@@ -15,13 +15,17 @@ Benchmarking helps you:
 
 ## Basic usage
 
+<Warning>
+Simulations are asynchronous and take ~20 seconds to run. Please see the section on [handling async results](#handling-async-results) for more details.
+</Warning>
+
 <CodeGroup>
 ```python Python
 from semilattice import Semilattice
 
 semilattice = Semilattice()
 
-result = semilattice.answers.benchmark(
+response = semilattice.answers.benchmark(
     population_id="d670f351-8567-4586-9bba-b81add1bebe3",
     answers={
         "question": "What's your primary role?",
@@ -43,7 +47,7 @@ const { Semilattice } = require('semilattice');
 
 const semilattice = new Semilattice();
 
-const result = await semilattice.answers.benchmark({
+const response = await semilattice.answers.benchmark({
     population_id: "d670f351-8567-4586-9bba-b81add1bebe3",
     answers: {
         question: "What's your primary role?",
@@ -99,7 +103,7 @@ The total number of people who responded to the question. This is crucial for mu
 
 <CodeGroup>
 ```python Python
-result = semilattice.answers.benchmark(
+response = semilattice.answers.benchmark(
     population_id="population-id",
     answers={
         "question": "What's your experience level?",
@@ -117,7 +121,7 @@ result = semilattice.answers.benchmark(
 ```
 
 ```javascript Node.js
-const result = await semilattice.answers.benchmark({
+const response = await semilattice.answers.benchmark({
     population_id: "population-id",
     answers: {
         question: "What's your experience level?",
@@ -139,7 +143,7 @@ const result = await semilattice.answers.benchmark({
 
 <CodeGroup>
 ```python Python
-result = semilattice.answers.benchmark(
+response = semilattice.answers.benchmark(
     population_id="population-id",
     answers={
         "question": "Which tools do you use? (Select all that apply)",
@@ -157,7 +161,7 @@ result = semilattice.answers.benchmark(
 ```
 
 ```javascript Node.js
-const result = await semilattice.answers.benchmark({
+const response = await semilattice.answers.benchmark({
     population_id: "population-id",
     answers: {
         question: "Which tools do you use? (Select all that apply)",
@@ -183,22 +187,25 @@ Like simulations, benchmarks run asynchronously:
 ```python Python
 import time
 
-answer_id = result.data[0].id
+answer = response.data[0]
 
-while result.data[0].status != "Predicted":
+while answer.status != "Predicted":
     time.sleep(1)
-    result = semilattice.answers.get(answer_id)
+    response = semilattice.answers.get(answer.id)
+    answer = response.data
 
-print("Benchmark complete!")
+print("Simulation complete!")
 ```
 
 ```javascript Node.js
-while (result.data[0].status !== "Predicted") {
+let answer = response.data[0]
+while (answer.status !== "Predicted") {
     await new Promise(resolve => setTimeout(resolve, 1000));
-    result = await semilattice.answers.get(result.data[0].id);
+    response = await semilattice.answers.get(answer.id);
+    answer = response.data
 }
 
-console.log("Benchmark complete!");
+console.log("Simulation complete!");
 ```
 </CodeGroup>
 
