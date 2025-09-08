@@ -101,7 +101,7 @@ const response = await semilattice.answers.simulate({
 
 ## Handling async results
 
-Simulations run asynchronously. The initial response has `status: "Queued"`, and you need to poll for completion:
+Simulations run asynchronously. The initial response has `status: "Queued"`, and you need to poll for completion.
 
 ### Initial response
 ```json
@@ -113,8 +113,6 @@ Simulations run asynchronously. The initial response has `status: "Queued"`, and
             "question": "Which is worse?",
             "answer_options": ["Tech debt", "Confusing error messages"],
             "simulated_answer_percentages": null,
-            "ground_answer_percentages": null,
-            "accuracy": null,
             // ... other fields
         }
     ]
@@ -122,6 +120,8 @@ Simulations run asynchronously. The initial response has `status: "Queued"`, and
 ```
 
 ### Polling for results
+
+The simulation will progress through these statuses: `Queued` → `Running` → `Predicted` (or potentially `Failed`). Predictions typically take less than 20 seconds.
 
 <CodeGroup>
 ```python Python
@@ -163,9 +163,7 @@ The `simulated_answer_percentages` field shows the predicted distribution across
         "simulated_answer_percentages": {
             "Tech debt": 0.5488,
             "Confusing error messages": 0.4512
-        },
-        "ground_answer_percentages": null,
-        "accuracy": null
+        }
     }
 }
 ```

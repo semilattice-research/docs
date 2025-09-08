@@ -181,7 +181,28 @@ const response = await semilattice.answers.benchmark({
 
 ## Handling async results
 
-Like simulations, benchmarks run asynchronously:
+Simulations run asynchronously. The initial response has `status: "Test Queued"`, and you need to poll for completion.
+
+### Initial response
+```json
+{
+    "data": [
+        {
+            "id": "84a92e29-54e6-4a60-862d-26cd2a78421e",
+            "status": "Test Queued",
+            "question": "What's your experience level?",
+            "answer_options": ["Junior", "Mid-level", "Senior", "Staff"],
+            "simulated_answer_percentages": null,
+            "accuracy": null,
+            // ... other fields
+        }
+    ]
+}
+```
+
+### Polling for results
+
+The simulation will progress through these statuses: `Test Queued` → `Test Running` → `Tested` (or potentially `Test Failed`). Predictions typically take less than 20 seconds.
 
 <CodeGroup>
 ```python Python
@@ -189,7 +210,7 @@ import time
 
 answer = response.data[0]
 
-while answer.status != "Predicted":
+while answer.status != "Tested":
     time.sleep(1)
     response = semilattice.answers.get(answer.id)
     answer = response.data
@@ -199,7 +220,7 @@ print("Simulation complete!")
 
 ```javascript Node.js
 let answer = response.data[0]
-while (answer.status !== "Predicted") {
+while (answer.status !== "Tested") {
     await new Promise(resolve => setTimeout(resolve, 1000));
     response = await semilattice.answers.get(answer.id);
     answer = response.data
