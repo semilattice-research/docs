@@ -42,15 +42,17 @@ population_options = json.dumps({
     ]
 })
 
-population = semilattice.populations.create(
-    name="Developer Survey Q4 2024",
-    description="Survey of software developers conducted in Q4 2024",
+response = semilattice.populations.create(
+    name="Developers",
+    description="Model of professional software developers",
     seed_data=Path("developer_survey_data.csv"),
-    reality_target="Software Developers",
-    simulation_engine="answers-1",
+    reality_target="Software developers",
+    data_source="Q4 developer survey",
+    effective_date="2024-10-18",
     population_options=population_options,  # see below
     run_test=False
 )
+population = response.data
 ```
 
 ```javascript Node.js
@@ -75,15 +77,17 @@ const populationOptions = JSON.stringify({
     ]
 });
 
-const population = await semilattice.populations.create({
-    name: "Developer Survey Q4 2024",
-    description: "Survey of software developers conducted in Q4 2024",
+const response = await semilattice.populations.create({
+    name: "Developers",
+    description: "Model of professional software developers",
     seed_data: fs.readFileSync("developer_survey_data.csv"),
-    reality_target: "Software Developers",
-    simulation_engine: "answers-1",
+    reality_target: "Software developers",
+    data_source: "Q4 developer survey",
+    effective_date: "2024-10-18",
     population_options: populationOptions,  // see below
     run_test: false
 });
+const population = response.data
 ```
 </CodeGroup>
 
@@ -92,11 +96,12 @@ const population = await semilattice.populations.create({
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `name` | string | Display name for your population |
-| `description` | string | Detailed description or documentation link |
 | `seed_data` | file/path | CSV file containing tabular QA pair data |
-| `reality_target` | string | Description of the target user profile |
-| `simulation_engine` | string | Simulation engine version (typically "answers-1") |
 | `population_options` | object | Tells the API about the data in your seed data file |
+| `description` | string | Detailed description or documentation link (optional) |
+| `reality_target` | string | Description of the target user profile (optional) |
+| `data_source` | string | Description of where the seed data comes from (optional) |
+| `effective_date` | date | Date when the data was sourced in reality (optional) |
 | `run_test` | boolean | Whether to automatically test the population after creation |
 
 ### Population options
@@ -104,7 +109,7 @@ const population = await semilattice.populations.create({
 Population options tell the API how to process your seed data. Semilattice supports single-choice, multiple-choice, and open-ended [question types](/populations/seed-data-requirements#question-types) in seed data, so the API needs to know which of these types each column in the dataset represents.
 
 <CodeGroup>
-```python
+```python Python
 population_options = json.dumps({
     "question_options": [
         {
@@ -120,6 +125,7 @@ population_options = json.dumps({
     ]
 })
 ```
+
 ```javascript Node.js
 const populationOptions = JSON.stringify({
     question_options: [
@@ -163,22 +169,38 @@ When you create a population, it goes through several status stages:
 ### 1. `Processing`
 Initially, your population will have a status of `Processing` while Semilattice processes and stores your data.
 
-```python
-print(f"Population status: {population.data.status}")
+<CodeGroup>
+```python Python
+print(f"Population status: {population.status}")
 # Output: Population status: Processing
 ```
+```javascript Node.js
+console.log(`Population status: ${population.status}`)
+// Output: Population status: Processing
+```
+</CodeGroup>
 
 ### 2. `Untested`
 Once processing completes, the status changes to `Untested`. At this point:
 - The population is ready to make predictions
 - We don't yet know its estimated accuracy
 
-```python
+<CodeGroup>
+```python Python
 # Check status periodically
-updated_population = semilattice.populations.get(population.data.id)
-print(f"Status: {updated_population.data.status}")
+response = semilattice.populations.get(population_id=population.id)
+population = response.data
+print(f"Status: {population.status}")
 # Output: Status: Untested
 ```
+```javascript Node.js
+// Check status periodically
+const response = await semilattice.populations.get(population.id)
+const population = response.data
+console.log(`"Status: ${population.status}`)
+// Output: Status: Untested
+```
+</CodeGroup>
 
 ### 3. `Testing`
 When you trigger accuracy testing, either automatically or manually (see below), the status changes to `Testing` while Semilattice evaluates the population's prediction accuracy.
@@ -196,24 +218,26 @@ Set `run_test=True` when creating the population:
 
 <CodeGroup>
 ```python Python
-population = semilattice.populations.create(
-    name="Developer Survey Q4 2024",
-    description="Survey of software developers conducted in Q4 2024",
+response = semilattice.populations.create(
+    name="Developers",
+    description="Model of professional software developers",
     seed_data=Path("developer_survey_data.csv"),
-    reality_target="Software Developers",
-    simulation_engine="answers-1",
+    reality_target="Software developers",
+    data_source="Q4 developer survey",
+    effective_date="2024-10-18",
     population_options=population_options,
     run_test=True  # Automatically test after processing
 )
 ```
 
 ```javascript Node.js
-const population = await semilattice.populations.create({
-    name: "Developer Survey Q4 2024",
-    description: "Survey of software developers conducted in Q4 2024",
+const response = await semilattice.populations.create({
+    name: "Developers",
+    description: "Model of professional software developers",
     seed_data: fs.readFileSync("developer_survey_data.csv"),
-    reality_target: "Software Developers",
-    simulation_engine: "answers-1",
+    reality_target: "Software developers",
+    data_source: "Q4 developer survey",
+    effective_date: "2024-10-18",
     population_options: populationOptions,
     run_test: true  // Automatically test after processing
 });
@@ -230,18 +254,18 @@ Alternatively, you can trigger testing manually on an `Untested` population:
 <CodeGroup>
 ```python Python
 # Trigger testing manually
-population = semilattice.populations.test(
-    population_id=population.data.id
+response = semilattice.populations.test(
+    population_id=population.id
 )
-# population.data.status will be "Testing"
+population = response.data
+# population.status will be "Testing"
 ```
 
 ```javascript Node.js
 // Trigger testing manually
-const population = await semilattice.populations.test({
-    population_id: population.data.id
-});
-// population.data.status will be "Testing"
+const response = await semilattice.populations.test(population.id);
+const population = response.data;
+// population.status will be "Testing"
 ```
 </CodeGroup>
 

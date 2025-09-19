@@ -3,57 +3,52 @@ title: "Accuracy evaluation"
 description: "Understanding population testing and accuracy metrics"
 ---
 
+import AggEvaluations from "/snippets/agg-evaluations.mdx"
+
 ![Evaluation](/images/populations/evaluation/hero.png)
 
 Population evaluation measures how accurately your custom population can predict responses to new questions. This testing process provides confidence metrics that help you understand the reliability of your API predictions.
 
-## Why test populations?
-
-When you create a population, you get a model built on your specific data. But without testing, you don't know:
-- How accurate predictions will be for new questions
-- Which types of questions the population handles well
-- Whether your seed data was sufficient
-
-Population testing answers these questions by measuring performance against held-out data.
-
 ## Testing methodologies
 
-Semilattice uses two types of testing to evaluate population model accuracy:
+Semilattice uses two types of testing to evaluate population model accuracy.
 
-### Population test
-The default testing method uses your original seed data:
-1. **Question removal**: Temporarily removes each question and its answers from the model
-2. **Prediction**: Asks the model to predict answers for that removed question
-3. **Comparison**: Compares predictions to the actual responses from your seed data
-4. **Iteration**: Repeats this process across all questions in your dataset
-5. **Averaging**: Calculates average accuracy metrics across all questions
+### Built-in cross-validation
 
-### Benchmarking test
-You can also test against separate data:
-- Uses completely separate test questions from the same target audience
-- Provides accuracy estimates for real-world performance
-- Currently available via API (UI support coming soon)
+The default testing method uses a population model's seed data to evaluate its accuracy via [leave-one-out cross-validation](https://en.wikipedia.org/wiki/Cross-validation_(statistics)#Leave-one-out_cross-validation).
 
-<Note>Most accuracy scores in the product come from population tests. The degree to which these represent real-world performance depends on how well your seed data represents the types of questions you'll ask in production.</Note>
+For each question in the seed dataset:
 
-### Open-ended questions cannot be tested
-The API currently does not support simulating open-ended outputs, so it is not possible test the accuracy of population models against open-ended ground truth data. If your population model contains open-ended seed data, these questions will not be tested as part of population tests. Their status will appear as `status: "Not Tested"` and population accuracy metrics will be calculated based on the results from other questions.
+1. The question and all answer data are temporarily removed from the set of data used by the model.
+2. The question is then predicted using the remaining data.
+3. Accuracy scores are calculated by comparing the predicted answer distribution with the held back ground truth distribution.
 
-## Running population tests
+Once this has been done for all questions in the seed dataset, the accuracy scores are averaged to calculate overall accuracy metrics for the population model.
 
-You can trigger population testing using the test method:
+<Warning>
+The API does not support predicting open-ended outputs. If your seed dataset contains open-ended data, these questions will not be tested during cross-validation. Their status will be `Not Tested` and overall accuracy metrics will be calculated with the results from other questions.
+</Warning>
+
+### User-defined test runs
+You can also test population models against sets of ground truth questions which are not part of the seed dataset. This enables use-case specific or periodic benchmarking.
+
+See the [tests](tests/introduction) section to learn how to run test predictions.
+
+## Triggering cross-validation
+
+You can trigger cross-validation tests using the test method:
 
 <CodeGroup>
 ```python Python
 # Trigger population testing
-population = semilattice.populations.test(population_id="your_population_id")
-population_id = population.data.id
+response = semilattice.populations.test(population_id="your_population_id")
+population = response.data
 ```
 
 ```javascript Node.js
 // Trigger population testing
-const population = await semilattice.populations.test("your_population_id");
-const populationId = population.data.id;
+const response = await semilattice.populations.test("your_population_id");
+const population = response.data;
 ```
 </CodeGroup>
 
@@ -63,17 +58,20 @@ You need to poll for completion as testing runs asynchronously:
 ```python Python
 import time
 
-while population.data.status != "Tested":
+while population.status != "Tested":
     time.sleep(1)
-    population = semilattice.populations.get(population_id=population_id)
+    response = semilattice.populations.get(population_id=population_id)
+    population = response.data
 
 print("Testing complete!")
 ```
 
 ```javascript Node.js
-while (population.data.status !== "Tested") {
+while (population.status !== "Tested") {
     await new Promise(resolve => setTimeout(resolve, 1000));
-    population = await semilattice.populations.get(populationId);
+    const response = await semilattice.populations.get(populationId);
+    population = response.data
+
 }
 
 console.log("Testing complete!");
@@ -92,45 +90,11 @@ If something goes wrong the status will be **"Action Required"**, indicating tha
     <img src="/images/populations/evaluation/population.png" />
 </Frame>
 
-Semilattice calculates three population-level metrics by averaging individual answer test results:
+For both built-in cross-validation tests and user-defined [test batches](/tests/create-batch-test), the API calculates three accuracy metrics:
 
-### Average mean absolute error
-- **Field**: `avg_mean_absolute_error`
-- **Range**: 0 to 1 (lower is better)
-- **Meaning**: Average percentage difference between predicted and actual answer distributions across all test questions
-- **Example**: 0.1472 means predictions are typically within ~14.7% of actual results
+<AggEvaluations />
 
-### Average mean squared error
-- **Field**: `avg_mean_squared_error`
-- **Range**: 0 to 1+ (lower is better)
-- **Meaning**: Penalises large prediction errors more heavily than small ones, averaged across test questions
-- **Use case**: Identifies populations that occasionally make very wrong predictions
-
-### Average normalised Kullback-Leibler divergence
-- **Field**: `avg_normalised_kullback_leibler_divergence`
-- **Range**: 0 to 1+ (lower is better)
-- **Meaning**: Measures how different predicted distributions are from reality, normalised by number of answer options and averaged across test questions
-- **Use case**: Best overall measure of population prediction quality
-
-## Interpreting results
-
-Based on Semilattice's benchmarking data, here are the thresholds for good performance:
-
-### Good performance thresholds
-- **Average MAE**: Below 0.15 (lower values indicate better accuracy)
-- **Average MSE**: Below 0.25 (lower values indicate more consistent predictions)
-- **Average Normalised KLD**: Below 0.1 (lower values indicate better distribution matching)
-
-### Benchmarking context
-These thresholds come from extensive benchmarking work:
-
-| Metric | Good Threshold | Benchmarking Average | Benchmarking Range |
-|--------|----------------|----------------------|--------------------|
-| **Average MAE** | Below 0.15 | 0.13 | 0.10 - 0.18 |
-| **Average MSE** | Below 0.25 | 0.21 | 0.15 - 0.30 |
-| **Average Normalised KLD** | Below 0.1 | 0.0569 | 0.0244 - 0.1006 |
-
-<Note>We increasingly find Average Normalised KLD to be the best single metric, but usually expect scores across all three metrics to be "good" to consider a population model reliable.</Note>
+<Note>We increasingly find Average Normalised Information Loss to be the best single metric, but usually expect scores across all three metrics to be "good" to consider a population model reliable.</Note>
 
 ## Accessing evaluation results
 
@@ -139,19 +103,21 @@ Once testing is complete, metrics are available in API responses:
 <CodeGroup>
 ```python Python
 # Get population with evaluation metrics
-population = semilattice.populations.get(population_id)
+response = semilattice.populations.get(population_id=population_id)
+population = response.data
 
-print(f"Average MAE: {population.data.avg_mean_absolute_error}")
-print(f"Average MSE: {population.data.avg_mean_squared_error}")
-print(f"Average Normalised KLD: {population.data.avg_normalised_kullback_leibler_divergence}")
+print(f"Average Accuracy: {population.average_accuracy}")
+print(f"Average Squared Error: {population.average_squared_error}")
+print(f"Average Normalised Information Loss: {population.average_normalised_information_loss}")
 ```
 
 ```javascript Node.js
 // Get population with evaluation metrics
-const population = await semilattice.populations.get(population_id);
+const response = await semilattice.populations.get(population_id);
+const population = response.data;
 
-console.log(`Average MAE: ${population.data.avg_mean_absolute_error}`);
-console.log(`Average MSE: ${population.data.avg_mean_squared_error}`);
-console.log(`Average Normalised KLD: ${population.data.avg_normalised_kullback_leibler_divergence}`);
+console.log(`Average Accuracy: ${population.average_accuracy}`);
+console.log(`Average Squared Error: ${population.average_squared_error}`);
+console.log(`Average Normalised Information Loss: ${population.average_normalised_information_loss}`);
 ```
 </CodeGroup>

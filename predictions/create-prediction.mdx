@@ -1,0 +1,179 @@
+---
+title: "Create a prediction"
+description: "Predict how populations would answer new questions"
+---
+
+import ChoosePopulations from "/snippets/choose-populations.mdx"
+
+## Basic usage
+
+<Warning>
+Predictions are asynchronous and take ~20 seconds to run. Please see the section on [handling async results](#handling-async-results) for more details.
+</Warning>
+
+<CodeGroup>
+```python Python
+from semilattice import Semilattice
+
+semilattice = Semilattice()
+
+response = semilattice.predictions.create(
+    population_id="population-id", # Replace with specific ID
+    predictions={
+        "question": "Which is worse?",
+        "answer_options": ["Tech debt", "Confusing error messages"],
+        "question_options": {"question_type": "single-choice"}
+    }
+)
+```
+
+```javascript Node.js
+const { Semilattice } = require('semilattice');
+
+const semilattice = new Semilattice();
+
+const response = await semilattice.predictions.create({
+    population_id: "population-id", // Replace with specific ID
+    predictions: {
+        question: 'Which is worse?', 
+        answer_options: ["Tech debt", "Confusing error messages"],
+        question_options: { question_type: 'single-choice' }
+    },
+});
+```
+</CodeGroup>
+
+<ChoosePopulations object="Predictions" />
+
+## Question types
+
+### Single-choice Questions
+Simulates respondents selecting exactly one option:
+
+<CodeGroup>
+```python Python
+response = semilattice.predictions.create(
+    population_id="population-id",
+    predictions={
+        "question": "What's your preferred IDE?",
+        "answer_options": ["VS Code", "IntelliJ", "Vim", "Sublime Text"],
+        "question_options": {"question_type": "single-choice"}
+    }
+)
+```
+
+```javascript Node.js
+const response = await semilattice.predictions.create({
+    population_id: "population-id",
+    predictions: {
+        question: "What's your preferred IDE?",
+        answer_options: ["VS Code", "IntelliJ", "Vim", "Sublime Text"],
+        question_options: { question_type: "single-choice" }
+    }
+});
+```
+</CodeGroup>
+
+### Multiple-choice Questions
+Simulates respondents selecting multiple options:
+
+<CodeGroup>
+```python Python
+response = semilattice.predictions.create(
+    population_id="population-id",
+    predictions={
+        "question": "Which programming languages do you use regularly?",
+        "answer_options": ["Python", "JavaScript", "Java", "Go", "Rust"],
+        "question_options": {"question_type": "multiple-choice"}
+    }
+)
+```
+
+```javascript Node.js
+const response = await semilattice.predictions.create({
+    population_id: "population-id",
+    predictions: {
+        question: "Which programming languages do you use regularly?",
+        answer_options: ["Python", "JavaScript", "Java", "Go", "Rust"],
+        question_options: { question_type: "multiple-choice" }
+    }
+});
+```
+</CodeGroup>
+
+## Handling async results
+
+Simulations run asynchronously. The initial response has `status: "Queued"`, and you need to poll for completion.
+
+### Initial response
+```json
+{
+    {
+        "id": "84a92e29-54e6-4a60-862d-26cd2a78421e",
+        "status": "Queued",
+        "question": "Which is worse?",
+        "answer_options": ["Tech debt", "Confusing error messages"],
+        "predicted_answer_percentages": null,
+        // ... other fields
+    }
+}
+```
+
+### Polling for results
+
+The simulation will progress through these statuses: `Queued` → `Running` → `Predicted` (or potentially `Failed`). Predictions typically take less than 20 seconds.
+
+<CodeGroup>
+```python Python
+import time
+
+prediction = response.data[0]
+
+while prediction.status != "Predicted":
+    time.sleep(1)
+    response = semilattice.predictionss.get(prediction.id)
+    prediction = response.data
+
+print("Prediction complete!")
+```
+
+```javascript Node.js
+let prediction = response.data[0]
+
+while (prediction.status !== "Predicted") {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    response = await semilattice.predictions.get(prediction.id);
+    prediction = response.data
+}
+
+console.log("Prediction complete!");
+```
+</CodeGroup>
+
+## Understanding results
+
+The `predicted_answer_percentages` field shows the [population-level](/predictions/introduction#population-level-outputs) predicted distribution across your answer options:
+
+```json
+{
+    "id": "84a92e29-54e6-4a60-862d-26cd2a78421e",
+    "status": "Predicted",
+    "question": "Which is worse?",
+    "answer_options": ["Tech debt", "Confusing error messages"],
+    "predicted_answer_percentages": {
+        "Tech debt": 0.5488,
+        "Confusing error messages": 0.4512
+    }
+}
+```
+
+This means:
+- 54.88% of the population would choose "Tech debt"
+- 45.12% would choose "Confusing error messages"
+
+### Best practices
+
+- **Choose the right population**: Select populations built on data similar to your target audience and question topics.
+- **Review population metrics**: Check the population's [evaluation scores](/populations/evaluation#evaluation-metrics) before relying on predictions for critical decisions.
+- **Use clear questions**: Write unambiguous questions with distinct answer options to get reliable predictions.
+- **Benchmark use cases**: [Test](/tests/introduction) your population with known questions before using it for important predictions.

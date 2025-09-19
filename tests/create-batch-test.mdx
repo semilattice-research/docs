@@ -1,0 +1,231 @@
+---
+title: "Create a test batch"
+description: "Run multiple tests for a defined goal or project"
+---
+
+import ChoosePopulations from "/snippets/choose-populations.mdx"
+import AggEvaluations from "/snippets/agg-evaluations.mdx"
+
+Batches are sets of tests grouped with a specific name and optional description. The name paremeter lets you record the purpose of the tests, for example "Q4 feature preference testing".
+
+## Basic usage
+
+Create a test batch by passing an object to the `batch` field in a `tests` `create` request. The `create` method's `tests` field accepts both single test objects or a list of objects, but only if batch details are set will a batch get created.
+
+<Warning>
+Test predictions are asynchronous and take ~20 seconds each to run. Please see the section on [handling async results](#handling-async-results) for more details.
+</Warning>
+
+<CodeGroup>
+```python Python
+from semilattice import Semilattice
+
+semilattice = Semilattice()
+
+response = semilattice.tests.create(
+    population_id="population-id", # Replace with specific ID
+    batch={
+        "name": "Q4 feature preference testing",
+        "description": "Benchmarking from recent user survey",
+    },
+    tests=[
+        {
+            "question": "What feature would have the biggest impact on your daily workflow?",
+            "answer_options": [
+                "Advanced search and filtering", 
+                "Real-time collaboration tools", 
+                "Mobile app improvements", 
+                "API integrations"
+            ],
+            "question_options": {"question_type": "single-choice"},
+            "ground_answer_counts": {
+                "Advanced search and filtering": 45,
+                "Real-time collaboration tools": 28,
+                "Mobile app improvements": 18,
+                "API integrations": 9
+            },
+            "ground_answer_sample_size": 100
+        },
+        {
+            "question": "Which type of enhancement should we prioritize next quarter?",
+            "answer_options": [
+                "Performance optimizations", 
+                "New dashboard features", 
+                "Enhanced reporting capabilities", 
+                "User interface redesign"
+            ],
+            "question_options": {"question_type": "single-choice"},
+            "ground_answer_counts": {
+                "Performance optimizations": 42,
+                "New dashboard features": 25,
+                "Enhanced reporting capabilities": 18,
+                "User interface redesign": 15
+            },
+            "ground_answer_sample_size": 100
+        }
+    ]
+)
+```
+```javascript Node.js
+const { Semilattice } = require('semilattice');
+
+const semilattice = new Semilattice();
+
+const response = await semilattice.tests.create({
+    population_id: "population-id", // Replace with specific ID
+    batch: {
+        "name": "Q4 feature preference testing",
+        "description": "Benchmarking from recent user survey",
+    },
+    tests: [
+        {
+            "question": "What feature would have the biggest impact on your daily workflow?",
+            "answer_options": [
+                "Advanced search and filtering", 
+                "Real-time collaboration tools", 
+                "Mobile app improvements", 
+                "API integrations"
+            ],
+            "question_options": {"question_type": "single-choice"},
+            "ground_answer_counts": {
+                "Advanced search and filtering": 45,
+                "Real-time collaboration tools": 28,
+                "Mobile app improvements": 18,
+                "API integrations": 9
+            },
+            "ground_answer_sample_size": 100
+        },
+        {
+            "question": "Which type of enhancement should we prioritize next quarter?",
+            "answer_options": [
+                "Performance optimizations", 
+                "New dashboard features", 
+                "Enhanced reporting capabilities", 
+                "User interface redesign"
+            ],
+            "question_options": {"question_type": "single-choice"},
+            "ground_answer_counts": {
+                "Performance optimizations": 42,
+                "New dashboard features": 25,
+                "Enhanced reporting capabilities": 18,
+                "User interface redesign": 15
+            },
+            "ground_answer_sample_size": 100
+        }
+    ]
+});
+```
+</CodeGroup>
+
+### Fetch a batch
+Test responses always contain a `batch` field, but only if batch details were provided will a batch be created.
+
+<CodeGroup>
+```python Python
+# Each test response will have a batch field containing the batch id
+tests = response.data
+batch_id = tests[0].batch
+
+```
+```javascript Node.js
+// Each test response will have a batch field containing the batch id
+const tests = response.data
+const batch_id = tests[0].batch
+```
+</CodeGroup>
+
+If batch details were provided, each test in the batch will have the same batch ID in its `batch` field. Grab this ID and then fetch the batch. The batch response will contain both the batch object and the batch's tests.
+
+<CodeGroup>
+```python Python
+response = semilattice.tests.get_batch(batch_id=batch_id)
+batch = response.data.batch
+batch_tests = response.data.tests
+```
+```javascript Node.js
+const response = await semilattice.tests.get_batch(batch_id)
+const batch = response.data.batch
+const batchTests = response.data.tests
+```
+</CodeGroup>
+
+<ChoosePopulations object="Test batches" />
+
+## Handling async batch results
+
+Batch test simulations run asynchronously. A batch object has a status field which captures the overall test status of the batch. In addition, each individual test within the batch has its own status field which captures its individual test status.
+
+The initial batch status will be `"Test Queued"`, and you need to poll for completion.
+
+### Initial response
+```json
+{
+    "id": "ac9c798e-87b8-46d0-b824-8d8d8d5dca03",
+    "status": "Test Queued",
+    "name": "Q4 feature preference testing",
+    "description": "Benchmarking from recent user survey",
+    // ... other fields
+}
+```
+
+### Polling for results
+
+The batch will progress through these statuses: `Test Queued` → `Test Running` → `Tested` (or potentially `Test Failed`). Tests typically take less than 20 seconds, so a batch should take N * ~20 seconds, where N is the number of tests in the batch.
+
+<CodeGroup>
+```python Python
+import time
+
+while batch.status != "Tested":
+    time.sleep(1)
+    response = semilattice.tests.get_batch(batch_id=batch.id)
+    batch = response.data.batch
+
+print("Batch complete!")
+
+```
+
+```javascript Node.js
+
+while (batch.status !== "Tested") {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    response = await semilattice.tests.get_batch(batch.id);
+    batch = response.data.batch
+}
+
+console.log("Batch complete!");
+```
+</CodeGroup>
+
+## Evaluation metrics
+
+Once complete, batch results include aggregate evaluation metrics for all tests in the batch:
+
+```json
+{
+    "id": "batch-id",
+    "created_at": "2025-09-17T11:11:45.493588Z",
+    "name": "Q4 feature preference testing",
+    "description": "Benchmarking from recent user survey",
+    "population": "population-id",
+    "status": "Tested",
+    "batch_type": "test",
+    
+    // Aggregate evaluation metrics
+    "average_accuracy": 0.6908609559394638,
+    "average_normalised_information_loss": 0.1541559753180729,
+    "average_squared_error": 0.34008355133987767,
+    
+    // Other details
+    "simulation_engine": "answers-1",
+    "test_started_at": "2025-09-17T11:11:45.887311Z",
+    "test_finished_at": "2025-09-17T11:11:47.506565Z",
+    "effective_date": null,
+    "data_source": null,
+    "public": false,
+}
+```
+
+For test batches, the API calculates the same [three evaluation metrics](/populations/evaluation.mdx) as for population cross-validation tests:
+
+<AggEvaluations />

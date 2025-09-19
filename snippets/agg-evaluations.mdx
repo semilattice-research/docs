@@ -1,0 +1,35 @@
+### Average Accuracy
+- **Field**: `average_accuracy`
+- **Range**: 0 to 1 (higher is better)
+- **Calculation**: The [mean absolute error (MAE)](https://en.wikipedia.org/wiki/Mean_absolute_error) between the predicted and ground truth answer distributions for each question is calculated, averaged, and then subtracted from 1 to convert it from an error measure to a crude accuracy measure.
+- **Example**: 0.8721
+
+### Average Squared Error
+- **Field**: `average_squared_error`
+- **Range**: 0 to 1 (lower is better)
+- **Calculation**: The [root mean squared error (RMSE)](https://en.wikipedia.org/wiki/Mean_absolute_error) between the predicted and ground truth answer distributions for each question is calculated and then averaged.
+- **Example**: 0.1607
+
+### Average Normalised Information Loss
+- **Field**: `average_normalised_information_loss`
+- **Range**: 0 to 1+ (lower is better)
+- **Calculation**: The [Kullback–Leibler (KL) divergence](https://en.wikipedia.org/wiki/Kullback–Leibler_divergence) (also called relative entropy) between the predicted and ground truth answer distributions for each question is calculated, normalised to the number of answer options in the question, and then averaged.
+- **Example**: 0.0063
+
+## Interpreting results
+
+Based on all of our benchmarking to date, we have some hueristics on what "good" looks like.
+
+### Good performance thresholds
+- **Average Accuracy**: Above 0.85 (higher values indicate better accuracy)
+- **Average Squared Error**: Below 0.18 (lower values indicate more consistent predictions)
+- **Average Normalised Information Loss**: Below 0.1 (lower values indicate better distribution matching)
+
+### Benchmarking context
+These thresholds come from extensive benchmarking work:
+
+| Metric | Good Threshold | Benchmarking Average | Benchmarking Range |
+|--------|----------------|----------------------|--------------------|
+| **Average Accuracy** | Above 0.85 | 0.87 | 0.82 - 0.92 |
+| **Average Squared Error** | Below 0.18 | 0.16 | 0.11 - 0.24 |
+| **Average Normalised Information Loss** | Below 0.1 | 0.0569 | 0.0244 - 0.1006 |

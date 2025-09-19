@@ -1,0 +1,149 @@
+---
+title: "Create a prediction batch"
+description: "Run multiple predictions for a defined goal or project"
+---
+
+import ChoosePopulations from "/snippets/choose-populations.mdx"
+
+Batches are sets of predictions grouped with a specific name and optional description. The name paremeter lets you record the purpose of the predictions, for example "Developer satisfaction".
+
+## Basic usage
+
+Create a prediction batch by passing an object to the `batch` field in a `predictions` `create` request. The `create` method's `predictions` field accepts both single prediction objects or a list of objects, but only if batch details are set will a batch get created.
+
+<Warning>
+Predictions are asynchronous and take ~20 seconds each to run. Please see the section on [handling async results](#handling-async-results) for more details.
+</Warning>
+
+<CodeGroup>
+```python Python
+from semilattice import Semilattice
+
+semilattice = Semilattice()
+
+response = semilattice.predictions.create(
+    population_id="population-id", # Replace with specific ID
+    batch={
+        "name": "Developer satisfaction",
+        "description": "Questions peering into the day-to-day of deveopers",
+    },
+    predictions=[
+        {
+            "question": "Which is worse?",
+            "answer_options": ["Tech debt", "Confusing error messages"],
+            "question_options": {"question_type": "single-choice"}
+        },
+        {
+            "question": "Which brings you most joy?",
+            "answer_options": ["Plentiful code examples", "Consistent method naming"],
+            "question_options": {"question_type": "single-choice"}
+        }
+    ]
+)
+```
+```javascript Node.js
+const { Semilattice } = require('semilattice');
+
+const semilattice = new Semilattice();
+
+const response = await semilattice.predictions.create({
+    population_id: "population-id", // Replace with specific ID
+    batch: {
+        "name": "Developer satisfaction",
+        "description": "Questions peering into the day-to-day of deveopers",
+    },
+    predictions: [
+        {
+            question: "Which is worse?", 
+            answer_options: ["Tech debt", "Confusing error messages"],
+            question_options: { question_type: 'single-choice' }
+        },
+        {
+            question: "Which brings you most joy?", 
+            answer_options: ["Plentiful code examples", "Consistent method naming"],
+            question_options: { question_type: 'single-choice' }
+        },
+    ]
+});
+```
+</CodeGroup>
+
+### Fetch a batch
+Prediction responses always contain a `batch` field, but only if batch details were provided will a batch be created.
+
+<CodeGroup>
+```python Python
+# Each prediction response will have a batch field containing the batch id
+predictions = response.data
+batch_id = predictions[0].batch
+
+```
+```javascript Node.js
+// Each prediction response will have a batch field containing the batch id
+const predictions = response.data
+const batch_id = predictions[0].batch
+```
+</CodeGroup>
+
+If batch details were provided, each prediction in the batch will have the same batch ID in its `batch` field. Grab this ID and then fetch the batch. The batch response will contain both the batch object and the batch's predictions.
+
+<CodeGroup>
+```python Python
+response = semilattice.predictions.get_batch(batch_id=batch_id)
+batch = response.data.batch
+batch_predictions = response.data.predictions
+```
+```javascript Node.js
+const response = await semilattice.predictions.get_batch(batch_id)
+const batch = response.data.batch
+const batch_predictions = response.data.predictions
+```
+</CodeGroup>
+
+<ChoosePopulations object="Prediction batches" />
+
+## Handling async batch results
+
+Batch prediction simulations run asynchronously. A batch object has a status field which captures the overall prediction status of the batch. In addition, each individual prediction within the batch has its own status field which captures its individual prediction status.
+
+The initial batch status will be `"Queued"`, and you need to poll for completion.
+
+### Initial response
+```json
+{
+    "id": "ac9c798e-87b8-46d0-b824-8d8d8d5dca03",
+    "status": "Queued",
+    "name": "Developer satisfaction",
+    "description": "Questions peering into the day-to-day of deveopers",
+    // ... other fields
+}
+```
+
+### Polling for results
+
+The batch will progress through these statuses: `Queued` → `Running` → `Predicted` (or potentially `Failed`). Predictions typically take less than 20 seconds, so a batch should take N * ~20 seconds, where N is the number of predictions in the batch.
+
+<CodeGroup>
+```python Python
+import time
+
+while batch.status != "Predicted":
+    time.sleep(1)
+    response = semilattice.predictions.get_batch(batch_id=batch.id)
+    batch = response.data.batch
+
+print("Batch complete!")
+
+```
+
+```javascript Node.js
+
+while (batch.status !== "Predicted") {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    response = await semilattice.predictions.get_batch(batch.id);
+    batch = response.data.batch
+}
+
+console.log("Batch complete!");
+```
+</CodeGroup>

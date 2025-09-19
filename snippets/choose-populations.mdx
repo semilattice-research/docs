@@ -1,0 +1,19 @@
+## Choosing population models
+{object} require a specific population model ID. Call the `list` method on `populations` to get a list of population models available for simulation.
+
+<CodeGroup>
+```python Python
+response = semilattice.populations.list()
+populations = response.data
+```
+```javascript Node.js
+const response = await semilattice.populations.list()
+const populations = response.data
+```
+</CodeGroup>
+
+Alternatively, you can navigate to the [populations page](https://semilattice.ai/populations) on your dashboard and select a population model to use. Copy the ID from the population's metadata or from the address bar.
+
+<Frame caption="Click to copy the population model's ID">
+    <img src="/images/quickstart/select_population_id.png" />
+</Frame>

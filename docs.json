@@ -9,52 +9,72 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "tabs": [
+    "versions": [
         {
-            "tab": "Documentation",
-            "groups": [
+            "version": "1.1.0",
+            "tabs": [
                 {
-                    "group": "Get Started",
-                    "pages": [
-                        "introduction",
-                        "python-quickstart",
-                        "nodejs-quickstart"
-                    ],
-                    "icon": "rocket"
-                },
-                {
-                    "group": "Learn",
-                    "pages": [
+                    "tab": "Documentation",
+                    "groups": [
                         {
-                            "group": "Populations",
+                            "group": "Get Started",
                             "pages": [
-                                "populations/introduction",
-                                "populations/create-population",
-                                "populations/seed-data-requirements",
-                                "populations/evaluation"
+                                "introduction",
+                                "python-quickstart",
+                                "nodejs-quickstart"
                             ],
-                            "icon": "globe"
+                            "icon": "rocket"
                         },
                         {
-                            "group": "Answers",
+                            "group": "Learn",
                             "pages": [
-                                "answers/introduction",
-                                "answers/simulate-answer",
-                                "answers/benchmark-answer"
+                                {
+                                    "group": "Populations",
+                                    "pages": [
+                                        "populations/introduction",
+                                        "populations/create-population",
+                                        "populations/seed-data-requirements",
+                                        "populations/evaluation"
+                                    ],
+                                    "icon": "globe"
+                                },
+                                {
+                                    "group": "Predictions",
+                                    "pages": [
+                                        "predictions/introduction",
+                                        "predictions/create-prediction",
+                                        "predictions/create-batch-prediction"
+                                    ],
+                                    "icon": "chart-simple"
+                                },
+                                {
+                                    "group": "Tests",
+                                    "pages": [
+                                        "tests/introduction",
+                                        "tests/create-test",
+                                        "tests/create-batch-test"
+                                    ],
+                                    "icon": "circle-check"
+                                }
                             ],
-                            "icon": "chart-simple"
+                            "icon": "book"
                         }
-                    ],
-                    "icon": "book"
+                    ]
+                },
+                {
+                    "tab": "API Reference",
+                    "openapi": {
+                        "source": "https://app.stainless.com/api/spec/documented/semilattice-sdk/openapi.documented.yml",
+                        "directory": "api-reference"
+                    }
+                },
+                {
+                    "tab": "Changelog",
+                    "pages": [
+                        "changelog"
+                    ]
                 }
-                ]
-        },
-        {
-            "tab": "API Reference",
-            "openapi": {
-                "source": "https://api.semilattice.ai/openapi.json",
-                "directory": "api-reference"
-            }
+            ]
         }
     ]
   },

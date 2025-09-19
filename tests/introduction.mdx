@@ -1,0 +1,87 @@
+---
+title: "What are tests?"
+description: "Understanding Semilattice's testing feature"
+---
+
+Tests measure how accurately a [population model](/populations/introduction) predicts the target audience's answer to a question.
+
+## Why test?
+The tests feature lets you benchmark a population model's accuracy on specific types of questions. For example, you might benchmark a model's ability to predict user reactions to marketing messages, generating accuracy estimates for that specific use case.
+
+While the [population evaluation](/populations/evaluation.mdx) feature evaluates a population model against all of its [seed data](/populations/seed-data-requirements.mdx), the testing feature let's you evaluate a model against separate data which is not part of the seed data.
+
+## Key concepts
+
+### Ground truth data
+Testing requires the target population's true answer distribution for the question in order to calculate evaluation scores. This data is only used to calculate evaluation scores—it is not seen by the population model or simulation engine. Ensuring ground truth data is accurate is crucial to making tests informative and useful.
+
+### Question types
+The API supports testing two types of questions:
+
+<CardGroup cols={2}>
+  <Card title="Single-Choice" icon="list-radio">
+    Simulates respondents selecting exactly one option from a list of choices.
+  </Card>
+  <Card title="Multiple-Choice" icon="list-check">
+    Simulates respondents selecting multiple options from a list of choices.
+  </Card>
+</CardGroup>
+
+### Test batches
+The [batches](/tests/create-batch-test) feature lets you run multiple test predictions for a defined test objective or project. 
+
+For example, you might assemble a set of 50 test questions, along with their ground truth answer distributions, to test a model's ability to predict user preferences around product features. You would then trigger this test batch with one API call, providing a name and description for the batch such as "Feature tests Q2".
+
+Once all of the individual test predictions are complete, the API will calculate average [evaluation scores](/populations/evaluation#evaluation-metrics) for the whole batch.
+
+### Tests in the dashboard
+The **Testing** tab on the population page in the dashboard shows all of the test predictions run against that model.
+
+### Test response structure
+
+All test responses have a consistent structure:
+
+```json
+{
+    "id": "prediction-id",
+    "created_at": "2025-09-17T11:11:45.493588Z",
+    "population": "population-id",
+    "population_name": "Developers",
+    "batch": "batch-id", // or null
+    "status": "Predicted",
+    "question": "Which is worse?",
+    "answer_options": ["Tech debt", "Unclear error messages"],
+    "predicted_answer_percentages": { 
+        "Tech debt": 0.38, 
+        "Unclear error messages": 0.62 
+    },
+    "ground_answer_counts": { 
+        "Tech debt": 55, 
+        "Unclear error messages": 45 
+    },
+    "ground_answer_percentages": { 
+        "Tech debt": 0.47, 
+        "Unclear error messages": 0.53 
+    },
+    "accuracy": 0.91,
+    "squared_error": 0.08999999999999997,
+    "information_loss": 0.0167,
+    "normalised_information_loss": 0.008388683920526128,
+    "question_options": { "question_type": "single-choice" },
+    "simulation_engine": "answers-1",
+    "test_started_at": "2025-09-17T11:11:45.887311Z",
+    "test_finished_at": "2025-09-17T11:11:47.506565Z",
+    "public": false,
+}
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Create a test" icon="circle-check" href="/tests/create-test">
+    Test a population model on a known question
+  </Card>
+  <Card title="Create a test batch" icon="grid-round" href="/tests/create-batch-test">
+    Run a multiple tests for a defined goal or project
+  </Card>
+</CardGroup>

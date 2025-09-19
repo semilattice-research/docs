@@ -1,0 +1,89 @@
+---
+title: "What are predictions?"
+description: "Understanding Semilattice's question prediction system"
+---
+
+Predictions simulate how a specific population, defined by a [population model](/populations/introduction), would answer a **question**.
+
+<Info>
+    Questions are just the first type of behaviour Semilattice can predict. We plan to add more behaviours in the near future.
+</Info>
+
+## Why predict?
+Predictions are designed for discovering new information about your users, customers, market, or other groups of people. For example, you might predict how your users will react to new website headlines with a question like "Which of the following headlines most resonates with you?"
+
+Fundamentally, the accuracy of predictions can only ever be estimated or discovered later in time. However, the [population evaluation](/populations/evaluation.mdx) and [testing](/tests/introduction.mdx) features enable you to generate accuracy estimates so you can build confidence in a model's predictions.
+
+## Key concepts
+
+### Population-level outputs
+Predictions represent how a **population** would respond to questions, not individual people. You'll never see simulated responses from specific individuals - only aggregated percentages showing how the group as a whole would distribute across answer options.
+
+```json
+{
+    "predicted_answer_percentages": {
+        "Very satisfied": 0.34,
+        "Somewhat satisfied": 0.41,
+        "Neutral": 0.15,
+        "Somewhat dissatisfied": 0.07,
+        "Very dissatisfied": 0.03
+    }
+}
+```
+
+### Question types
+The API supports two types of questions:
+
+<CardGroup cols={2}>
+  <Card title="Single-Choice" icon="list-radio">
+    Simulates respondents selecting exactly one option from a list of choices.
+  </Card>
+  <Card title="Multiple-Choice" icon="list-check">
+    Simulates respondents selecting multiple options from a list of choices.
+  </Card>
+</CardGroup>
+
+### Prediction batches
+The [batches](/predictions/create-batch-prediction) feature lets you run multiple predictions for a defined test objective or project. 
+
+For example, you might assemble a set of 50 questions to predict user preferences around product features. You would then trigger this batch with one API call, providing a name and description for the batch such as "Feature discovery Q2", so you can refer back to it later.
+
+### Predictions in the dashboard
+The **Predictions** tab in your dashboard shows all questions you've simulated across different populations. Each row represents a unique question-population combination, allowing you to track and compare predictions over time.
+
+### Prediction response structure
+
+All prediction responses have a consistent structure:
+
+```json
+{
+    "id": "prediction-id",
+    "created_at": "2025-09-17T11:11:45.493588Z",
+    "population": "population-id",
+    "population_name": "Developers",
+    "batch": "batch-id", // or null
+    "status": "Predicted",
+    "question": "Which is worse?",
+    "answer_options": ["Tech debt", "Unclear error messages"],
+    "predicted_answer_percentages": { 
+        "Tech debt": 0.6, 
+        "Unclear error messages": 0.4 
+    },
+    "question_options": { "question_type": "single-choice" },
+    "simulation_engine": "answers-1",
+    "prediction_started_at": "2025-09-17T11:11:45.887311Z",
+    "prediction_finished_at": "2025-09-17T11:11:47.506565Z",
+    "public": false,
+}
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Create a prediction" icon="chart-simple" href="/predictions/create-prediction">
+    Predict how populations respond to new questions
+  </Card>
+  <Card title="Create a prediction batch" icon="grid" href="/predictions/create-batch-prediction">
+    Run a multiple predictions for a defined goal or project
+  </Card>
+</CardGroup>

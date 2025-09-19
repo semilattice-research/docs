@@ -1,0 +1,53 @@
+---
+title: "Changelog"
+description: "Product updates and announcements"
+---
+<Update label="September 2025">
+    ## Batches, faster predictions, new methods, and new names
+    `API v1.1.0` `SDK v0.6.0`
+
+    #### Batches
+    - You can now include `batch` object when creating multiple predictions to provide a name and description for the set.
+    - Predictions which are part of a batch will have a `batch` field set with an ID for the batch.
+    - This ID can be used to fetch all predictions in the batch: `/predictions/batch/{batch_id}`
+
+    #### Faster predictions
+    - Predictions are now ~3x faster, taking less than 15 seconds. [Watch the demo video](http://semilattice.ai/latency.mp4) (has sound).
+
+    #### New methods
+    We have added two new methods:
+    - `GET /populations` returns all population models available for simulation
+    - `GET /predictions|tests/batch/{batch_id}` returns batch details and all batch predictions for a batch
+
+    #### New names
+    We have renamed some methods and object fields to simplify the API. Old methods and fields still work but are marked as deprecated.
+
+    New method names:
+    - `POST /answers` -> `POST /predictions`
+    - `POST /answers/benchmark` -> `POST /tests`
+
+    New field names on `predictions` (previously called `answers`):
+    - `simulated_answer_percentages` -> `predicted_answer_percentages`
+
+    New field names on `tests` (previously called `answers`):
+    - `simulated_answer_percentages` -> `predicted_answer_percentages`
+    - `kullback_leibler_divergence` -> `information_loss`
+    - `normalised_kullback_leibler_divergence` -> `normalised_information_loss`
+    - `root_mean_squared_error` -> `squared_error`
+
+    New field names on `populations`:
+    - `avg_mean_absolute_error` -> `average_accuracy` (inverted)
+    - `avg_mean_squared_error` -> `average_squared_error`
+    - `avg_normalised_kullback_leibler_divergence` -> `average_normalised_information_loss`
+</Update>
+
+<Update label="July 2025">
+    ## The Semilattice API: user insights as infrastructure
+    `API v1.1.0` `SDK v0.5.2`
+
+    V1 release of the Semilattice API. Predict user behaviour like you make database queries. [Read the blog post](https://semilattice.ai/blog/api) and [get started](introduction).
+    - Create population models with custom seed data
+    - Test model accuracy with built-in cross-validation
+    - Test model accuracy on external ground truth data
+    - Predict new questions
+</Update>

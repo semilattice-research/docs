@@ -80,14 +80,25 @@ When making API calls, you can access:
   </Accordion>
 </AccordionGroup>
 
-<Frame caption="API access depends on population privacy settings">
-  <img src="/images/populations/introduction/public_private.png" />
-</Frame>
+## View available population models
 
-## Finding population IDs
+To use a population in your API calls, you need its ID. You can view which population models are available for simulation in two ways:
 
-To use a population in your API calls, you need its ID. Navigate to the [Populations page](https://semilattice.ai/populations) in your dashboard and select a population model to use. Copy the ID from the population's metadata or from the address bar.
+1. Call the REST API `GET /populations` or the SDK `populations.list` methods:
 
-<Frame caption="Click to copy the population model's ID">
+<CodeGroup>
+```python Python
+response = semilattice.populations.list()
+populations = response.data
+```
+```javascript Node.js
+const response = await semilattice.populations.list()
+const populations = response.data
+```
+</CodeGroup>
+
+2. Visit the [populations page](https://semilattice.ai/populations) in the dashboard:
+
+<Frame caption="Click to copy a population's ID from the dashboard">
   <img src="/images/quickstart/select_population_id.png" />
 </Frame>
