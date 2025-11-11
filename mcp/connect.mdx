@@ -1,0 +1,64 @@
+---
+title: "Connect to Semilattice MCP"
+description: "Learn how to connect your AI assistant, IDE, or agentic tooling to Semilattice MCP"
+---
+
+## URL
+The Semilattice MCP is a remote server accessible over streamable HTTP. The URL is:
+
+```
+https://mcp.semilattice.ai
+```
+## Connect your client
+
+<AccordionGroup>
+    <Accordion title="Claude web">
+        
+        **Prerequisuites**: paid Claude subscription
+        
+        1. Navigate to **Settings** from the account menu (bottom left corner)
+        2. Click **Add custom connector** below the list of Connectors
+        3. Add a descriptive name e.g. `Semilattice`
+        4. Enter the MCP URL: `https://mcp.semilattice.ai`
+        5. Leave "Advanced settings" blank
+        6. Click **Connect**
+        7. Go through the authentication flow to create or sign into a Semilattice account with your Google email
+        
+        🎉 Semilattice should now be ready to use with Claude!
+    </Accordion>
+    <Accordion title="Claude desktop">
+        **Prerequisuites**: paid Claude subscription
+        
+        1. Navigate to **Settings** from the account menu (bottom left corner)
+        2. Click **Add custom connector** below the list of Connectors
+        3. Add a descriptive name e.g. `Semilattice`
+        4. Enter the MCP URL: `https://mcp.semilattice.ai`
+        5. Leave advanced settings blank
+        6. Click **Connect**
+        7. Go through the authentication flow to create or sign into a Semilattice account with your Google email
+        
+        🎉 Semilattice should now be ready to use with Claude!
+    </Accordion>
+    <Accordion title="ChatGPT web">
+        **Prerequisuites**: paid ChatGPT subscription
+
+        1. Navigate to **Settings** from the account menu (bottom left corner)
+        2. Click **Apps & Connectors** in left-side nav
+        3. Click **Advanced Settings** at bottom of tab
+        4. Toggle on **Developer Mode**
+        5. Go back to **Apps & Connectors** tab
+        6. Click **Create** in top right of the Connectors section
+        7. Add a descriptive name like `Semilattice` in the **name** field. Optionally add a short explanation
+        8. Enter https://mcp.semilattice.ai as the **MCP Server URL**
+        9. Leave the authentication toggle default "OAuth"
+        10. Tick the warning box for **Custom MCPs**
+        11. Go through the authentication flow to create or sign into a Semilattice account with your Google email
+
+        🎉 Semilattice should now be ready to use with ChatGPT!
+
+        **Known issue:** ChatGPT cannot execute multiple tool calls in parallel or sequentially. You have to ask every question separately or prompt ChatGPT to continue the process after every question if it has planned to predict multiple questions.
+    </Accordion>
+    <Accordion title="ChatGPT desktop">
+        ChatGPT desktop does not currently support MCPs
+    </Accordion>
+</AccordionGroup>

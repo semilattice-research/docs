@@ -1,0 +1,51 @@
+---
+title: "Introduction"
+description: "Get started with the Semilattice MCP for user simulation"
+---
+
+Semilattice MCP is a [Model Context Protocol](https://modelcontextprotocol.io) server that gives AI assistants the ability to predict how specific audiences would answer questions.
+
+<Frame>
+    <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="w-full aspect-video rounded-xl"
+        src="https://semilattice.ai/mcp.mp4"
+        >
+    </video>
+</Frame>
+
+## What is Semilattice?
+
+Semilattice is a simulation platform for predicting human behaviour. It lets you simulate responses from any user profile, from general consumers to niche user segments you define with your own data, and provides evaluation tools for measuring accuracy. See the [main API documentation](/introduction) for more information.
+
+## How the MCP works
+The Semilattice MCP is currently based on the Semilattice API. It has tools to let you and your AI assistant:
+
+1. **Choose a population to predict** - Select from ready-to-use public population models or create your own*
+2. **Create predictions** - Simulate how the population would answer questions to predict behaviour
+3. **Interpret results and go deeper** - Work with your assistant to interpret results and generate new questions to predict
+
+*Custom population models can be [created via the API](/populations/create-population) and will be immediately available to your MCP for simulation.
+
+## Tools
+
+### `list_population_models`
+Browse all available [population models](/populations/introduction) with details about their target demographics and accuracy metrics. This maps to the [get all populations](/api-reference/populations/get-all-populations) endpoint in the API.
+
+### `create_prediction`
+Creates a [prediction](/predictions/introduction) to simulate how a specific population would answer a question. This maps to the [create prediction](/api-reference/predictions/create-prediction) endpoint in the API.
+
+### `get_prediction`
+Fetches a prediction so the LLM can interpret or display the results. This maps to the [get prediction](/api-reference/predictions/get-prediction) endpoint in the API.
+
+### `wait_for_prediction`
+Predictions can take up to 20 seconds to complete and you [need to check their status](/predictions/create-prediction#handling-async-results) to see when they are finished. This tool takes care of that, only returning once a prediction is finished.
+
+## Next Steps
+
+<Card title="Connect to Semilattice MCP" icon="plug" href="/mcp/connect">
+Learn how to connect your AI assistant, IDE, or agentic tooling to Semilattice MCP
+</Card>
