@@ -35,6 +35,26 @@ https://mcp.semilattice.ai
         **Known issue:** ChatGPT cannot execute multiple tool calls in parallel or sequentially. You have to ask every question separately or prompt ChatGPT to continue the process after every question if it has planned to predict multiple questions.
     </Accordion>
 
+    <Accordion title="Cherry Studio">
+        1. Click the ⚙️ icon in the top right to open settings
+        2. Click **MCP** from the left nav
+        3. Click **+ Add** in the top right, then **Quick Create**
+        4. Give the server a descriptive name like “semilattice”
+        5. From the **Type** dropdown select **Streamable HTTP (streamableHttp)**
+        6. In the **URL** field enter the Semilattice MCP URL:
+
+        ```
+        https://mcp.semilattice.ai
+        ```
+
+        7. Leave the other fields as they are
+        8. Click **Save** in the top right
+        9. Click the toggle in the top right to connect
+        10. Go through the authentication flow to create or sign into a Semilattice account with your Google email
+
+        🎉 Semilattice should now be ready to use with Cherry Studio!
+    </Accordion>
+
     <Accordion title="Claude Code">
         1. In a CLI where you have Claude Code installed, before running Claude Code itself, run:
         ```bash
@@ -101,6 +121,34 @@ https://mcp.semilattice.ai
         7. Go through the authentication flow to create or sign into a Semilattice account with your Google email
 
         🎉 Semilattice should now be ready to use with Cline!
+    </Accordion>
+
+    <Accordion title="Codex">
+        **Prerequisuites**: paid ChatGPT subscription
+        
+        1. Open the Codex config file, usually located at `~/.codex/config.toml`. If you are using the IDE extension, you can find the config file by clicking the gear icon in the top right corner of the extension and then clicking **MCP settings** > **Open config.toml**.
+        2. Update the config to add Semilattice MCP and enable OAuth authentication:
+
+        ```toml
+        [features]
+        rmcp_client = true # enables OAuth authentication
+
+        [mcp_servers.semilattice]
+        url = "https://mcp.semilattice.ai"
+        ```
+
+        3. Before running codex itself, run:
+
+        ```toml
+        codex mcp login semilattice
+        ```
+
+        4. Go through the authentication flow to create or sign into a Semilattice account with your Google email
+        5. Start codex. You should see a brief message saying it’s connecting to Semilattice MCP. Run `/mcp` to verify connection.
+
+        🎉 Semilattice should now be ready to use with Codex!
+
+        See the [Codex docs](https://developers.openai.com/codex/mcp) for more info.
     </Accordion>
     
     <Accordion title="Cursor">
@@ -189,7 +237,7 @@ https://mcp.semilattice.ai
 
     <Accordion title="VS Code">
         1. Open the VSCode command palette: `Shift` + `Command` + `P` (Mac) or `Ctrl` + `Shift` + `P` (Windows/Linux)
-        2. Type "mcp" and select the **MCP: Add Server...** action
+        2. Type "mcp" and select the **MCP: Add Server...** option
         3. Select the **HTTP (HTTP or Server-Sent Events)** option
         4. Enter the Semilatatice MCP URL: `https://mcp.semilattice.ai`
         5. Enter "semilattice" or another descriptive name when prompted for a Server ID
@@ -216,6 +264,21 @@ https://mcp.semilattice.ai
     </Accordion>
     
 </AccordionGroup>
+
+## Clients with known problems
+
+We are aware of the following clients which do not currently support remote MCP servers with OAuth authentication:
+- ChatGPT desktop
+- Continue
+- Gemini web
+- Kiro
+- n8n
+- OpenCode
+- Pipelex
+- Roo Code
+- Windsurf
+- Workato
+- Zed
 
 ## Trouble connecting?
 
