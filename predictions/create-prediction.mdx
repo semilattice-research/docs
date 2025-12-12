@@ -131,7 +131,7 @@ prediction = response.data[0]
 
 while prediction.status != "Predicted":
     time.sleep(1)
-    response = semilattice.predictionss.get(prediction.id)
+    response = semilattice.predictions.get(prediction.id)
     prediction = response.data
 
 print("Prediction complete!")
