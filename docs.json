@@ -55,6 +55,13 @@
                       "tests/create-batch-test"
                     ],
                     "icon": "circle-check"
+                  },
+                  {
+                    "group": "Simulation Engine",
+                    "icon": "shuffle",
+                    "pages": [
+                      "how-does-semilattice-work"
+                    ]
                   }
                 ],
                 "icon": "book"
