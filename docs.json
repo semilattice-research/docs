@@ -128,5 +128,11 @@
       "github": "https://github.com/semilattice-research",
       "linkedin": "https://www.linkedin.com/company/semilattice"
     }
+  },
+  "integrations": {
+    "posthog": {
+      "apiKey": "phc_rlTa3SvEBqDX3EhwOW3AjGEyesUrWXVf8tPdupWGaC0",
+      "apiHost": "https://eu.i.posthog.com"
+    }
   }
 }
